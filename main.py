@@ -1,7 +1,10 @@
 from blackjack.game import BlackjackGame
 
 def main():
-    game = BlackjackGame(num_decks=1)
+    num_decks = int(input("Podaj liczbę talii kart: "))
+    num_players = int(input("Podaj liczbę graczy (w tym siebie): "))
+    
+    game = BlackjackGame(num_decks=num_decks, num_players=num_players)
     
     while True:
         game.play()

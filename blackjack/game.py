@@ -1,6 +1,6 @@
-from deck import Deck
-from player import Player
-from dealer import Dealer
+from .deck import Deck
+from .player import Player
+from .dealer import Dealer
 
 class BlackjackGame:
     def __init__(self, num_decks=1):
@@ -63,10 +63,15 @@ class BlackjackGame:
         """Rozgrywa jedną pełną grę."""
         self.start_new_round()
 
-        while self.player_hit():
+        while True:
             action = input("Chcesz dobrać kartę? (hit/stand): ").lower()
-            if action == 'stand':
+            if action == 'hit':
+                if not self.player_hit():
+                    break
+            elif action == 'stand':
                 break
+            else:
+                print("Nieprawidłowa opcja. Wpisz 'hit' lub 'stand'.")
 
         if self.player.get_hand_value() <= 21:
             self.dealer_turn()

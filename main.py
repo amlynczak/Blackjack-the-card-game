@@ -1,10 +1,13 @@
-from blackjack import Card, Deck, BlackjackGame
-#import card_counter
-#import ui
+from blackjack.game import BlackjackGame
 
 def main():
-    game = BlackjackGame(num_decks=1)  # Gra z jedną talią
-    game.play()  # Rozpocznij rozgrywkę
+    game = BlackjackGame(num_decks=1)
+    
+    while True:
+        game.play()
+        play_again = input("Czy chcesz zagrać jeszcze raz? (tak/nie): ").lower()
+        if play_again != 'tak':
+            break
 
 if __name__ == "__main__":
     main()

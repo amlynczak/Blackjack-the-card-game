@@ -1,4 +1,4 @@
-from player import Player
+from .player import Player
 
 class Dealer(Player):
     def __init__(self):

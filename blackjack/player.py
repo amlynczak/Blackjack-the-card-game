@@ -1,4 +1,4 @@
-from card import Card
+from .card import Card
 
 class Player:
     def __init__(self, name):
@@ -28,9 +28,7 @@ class Player:
     def reset_hand(self):
         """Czyści rękę gracza na potrzeby nowej rundy."""
         self.hand = []
-
-    def __repr__(self):
-        return f"{self.name}: {self.hand} (Punkty: {self.get_hand_value()})"
     
     def __str__(self):
-        return f"{self.name}: {self.hand} (Punkty: {self.get_hand_value()})"
+        hand_str = ', '.join(str(card) for card in self.hand)
+        return f"{self.name}: {hand_str} (Punkty: {self.get_hand_value()})"

@@ -1,13 +1,13 @@
 from .deck import Deck
 from .player import Player
 from .dealer import Dealer
-import random
+from .bot import Bot
 
 class BlackjackGame:
     def __init__(self, num_decks=1, num_players=1):
         self.deck = Deck(num_decks)
         self.main_player = Player(name="Gracz 1")
-        self.bot_players = [Player(name=f"Bot {i+1}") for i in range(num_players - 1)]
+        self.bot_players = [Bot(name=f"Bot {i+1}") for i in range(num_players - 1)]
         self.dealer = Dealer()
 
     def start_new_round(self):
@@ -91,7 +91,7 @@ class BlackjackGame:
         # Bot players turn
         for bot in self.bot_players:
             while True:
-                action = random.choice(['hit', 'stand'])
+                action = bot.decide_action()
                 print(f"{bot.name} wybiera: {action}")
                 if action == 'hit':
                     if not self.player_hit(bot):

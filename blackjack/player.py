@@ -28,6 +28,16 @@ class Player:
     def reset_hand(self):
         """Czyści rękę gracza na potrzeby nowej rundy."""
         self.hand = []
+
+    def hit(self, card):
+        self.add_card(card)
+        print(f"{card} for {self.name}")
+        print(f"{self.name}: {self}")
+
+        if self.get_hand_value() > 21:
+            print(f"{self.name} przekroczył 21! Przegrywasz.")
+            return False
+        return True
     
     def __str__(self):
         hand_str = ', '.join(str(card) for card in self.hand)

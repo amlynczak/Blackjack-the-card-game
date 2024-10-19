@@ -31,27 +31,6 @@ class BlackjackGame:
             print(f"Karty {bot.name}: {bot}")
         print(f"Karty Dealera: {self.dealer.hand[0]} i [ukryta]")
 
-    def player_hit(self, player):
-        """Gracz dobiera kartę."""
-        card = self.deck.deal_card()
-        player.add_card(card)
-        print(f"{player.name} dobrał kartę: {card}")
-        print(f"Karty {player.name}: {player}")
-
-        if player.get_hand_value() > 21:
-            print(f"{player.name} przekroczył 21! Przegrywasz.")
-            return False
-        return True
-
-    def dealer_turn(self):
-        """Tura krupiera - dealer dobiera karty zgodnie z zasadami."""
-        print(f"Karty Dealera: {self.dealer}")
-        while self.dealer.should_hit():
-            card = self.deck.deal_card()
-            self.dealer.add_card(card)
-            print(f"Dealer dobrał kartę: {card}")
-        print(f"Ręka Dealera: {self.dealer}")
-
     def check_winner(self):
         """Sprawdza, kto wygrał rundę."""
         dealer_value = self.dealer.get_hand_value()
@@ -81,7 +60,7 @@ class BlackjackGame:
         while True:
             action = input("Chcesz dobrać kartę? (hit/stand): ").lower()
             if action == 'hit':
-                if not self.player_hit(self.main_player):
+                if not self.main_player.hit(self.deck.deal_card()):
                     break
             elif action == 'stand':
                 break
@@ -94,13 +73,13 @@ class BlackjackGame:
                 action = bot.decide_action()
                 print(f"{bot.name} wybiera: {action}")
                 if action == 'hit':
-                    if not self.player_hit(bot):
+                    if not bot.hit(self.deck.deal_card()):
                         break
                 elif action == 'stand':
                     break
 
-        if all(player.get_hand_value() <= 21 for player in [self.main_player] + self.bot_players):
-            self.dealer_turn()
+        #if all(player.get_hand_value() <= 21 for player in [self.main_player] + self.bot_players):
+        self.dealer.dealers_turn(self.deck)
 
         results = self.check_winner()
         for result in results:

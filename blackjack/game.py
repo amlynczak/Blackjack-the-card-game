@@ -55,12 +55,15 @@ class BlackjackGame:
     def play(self):
         """Rozgrywa jedną pełną grę."""
         self.start_new_round()
-
+        
         # Main player turn
         while True:
-            action = input("Chcesz dobrać kartę? (hit/stand): ").lower()
+            action = input("Chcesz dobrać kartę? (hit/stand/double): ").lower()
             if action == 'hit':
                 if not self.main_player.hit(self.deck.deal_card()):
+                    break
+            elif action == 'double':
+                if not self.main_player.double_down(self.deck.deal_card()):
                     break
             elif action == 'stand':
                 break

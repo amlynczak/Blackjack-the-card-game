@@ -25,9 +25,13 @@ class Player:
     def hit(self, card, hand_id = 0):
         return self.hands[hand_id].hit(card)
     
+    def can_double_down(self, hand_id = 0):
+        return self.hands[self.hand_id].cards.__len__() == 2
+    
     def double_down(self, card, hand_id = 0):
-        self.money -= self.standard_bet
-        return self.hands[hand_id].double_down(card)
+        if self.can_double_down(hand_id):
+            self.money -= self.standard_bet
+            return self.hands[hand_id].double_down(card)
     
     def can_split(self):
         return self.hands[self.hand_id].cards.__len__() == 2 and self.hands[self.hand_id].cards[0].rank == self.hands[self.hand_id].cards[1].rank

@@ -44,12 +44,15 @@ class BlackjackGame:
                     results.append(f"{hand.name}: Dealer wygrywa!")
                 elif dealer_value > 21:
                     results.append(f"{player.name}: {hand.name} wygrywa!")
+                    player.money += hand.bet * 2
                 elif hand_value > dealer_value:
                     results.append(f"{player.name}: {hand.name} wygrywa!")
+                    player.money += hand.bet * 2
                 elif dealer_value > hand_value:
                     results.append(f"{hand.name}: Dealer wygrywa!")
                 else:
                     results.append(f"{hand.name}: Remis!")
+                    player.money += hand.bet
 
         return results
 
@@ -65,8 +68,9 @@ class BlackjackGame:
                     if not self.main_player.hit(self.deck.deal_card()):
                         break
                 elif action == 'double':
-                    if not self.main_player.double_down(self.deck.deal_card()):
-                        break
+                    if self.main_player.can_double_down():
+                        if not self.main_player.double_down(self.deck.deal_card()):
+                            break
                 elif action == 'split':
                     if self.main_player.can_split():
                         self.main_player.split(self.deck.deal_card(), self.deck.deal_card())
@@ -105,3 +109,7 @@ class BlackjackGame:
         results = self.check_winner()
         for result in results:
             print(result)
+
+        print(f"Stan konta {self.main_player.name}: {self.main_player.money}")
+        for bot in self.bot_players:
+            print(f"Stan konta {bot.name}: {bot.money}")

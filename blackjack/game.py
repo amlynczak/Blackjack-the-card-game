@@ -38,17 +38,18 @@ class BlackjackGame:
 
         players = [self.main_player] + self.bot_players
         for player in players:
-            player_value = player.get_hand_value()
-            if player_value > 21:
-                results.append(f"{player.name}: Dealer wygrywa!")
-            elif dealer_value > 21:
-                results.append(f"{player.name}: {player.name} wygrywa!")
-            elif player_value > dealer_value:
-                results.append(f"{player.name}: {player.name} wygrywa!")
-            elif dealer_value > player_value:
-                results.append(f"{player.name}: Dealer wygrywa!")
-            else:
-                results.append(f"{player.name}: Remis!")
+            for hand in player.hands:
+                hand_value = hand.get_hand_value()
+                if hand_value > 21:
+                    results.append(f"{hand.name}: Dealer wygrywa!")
+                elif dealer_value > 21:
+                    results.append(f"{player.name}: {hand.name} wygrywa!")
+                elif hand_value > dealer_value:
+                    results.append(f"{player.name}: {hand.name} wygrywa!")
+                elif dealer_value > hand_value:
+                    results.append(f"{hand.name}: Dealer wygrywa!")
+                else:
+                    results.append(f"{hand.name}: Remis!")
 
         return results
 
@@ -57,29 +58,46 @@ class BlackjackGame:
         self.start_new_round()
         
         # Main player turn
-        while True:
-            action = input("Chcesz dobrać kartę? (hit/stand/double): ").lower()
-            if action == 'hit':
-                if not self.main_player.hit(self.deck.deal_card()):
+        while self.main_player.hand_id < len(self.main_player.hands):
+            while True:
+                action = input("Chcesz dobrać kartę? (hit/stand/double): ").lower()
+                if action == 'hit':
+                    if not self.main_player.hit(self.deck.deal_card()):
+                        break
+                elif action == 'double':
+                    if not self.main_player.double_down(self.deck.deal_card()):
+                        break
+                elif action == 'split':
+                    if self.main_player.can_split():
+                        self.main_player.split(self.deck.deal_card(), self.deck.deal_card())
+                    else:
+                        print("Nie możesz podzielić tych kart.")
+                elif action == 'stand':
                     break
-            elif action == 'double':
-                if not self.main_player.double_down(self.deck.deal_card()):
-                    break
-            elif action == 'stand':
-                break
-            else:
-                print("Nieprawidłowa opcja. Wpisz 'hit' lub 'stand'.")
+                else:
+                    print("Nieprawidłowa opcja. Wpisz 'hit' lub 'stand'.")
+            self.main_player.hand_id += 1
 
         # Bot players turn
         for bot in self.bot_players:
-            while True:
-                action = bot.decide_action()
-                print(f"{bot.name} wybiera: {action}")
-                if action == 'hit':
-                    if not bot.hit(self.deck.deal_card()):
+            while bot.hand_id < len(bot.hands):
+                while True:
+                    action = bot.decide_action(self.dealer.hand)
+                    print(f"{bot.name} wybiera: {action}")
+                    if action == 'hit':
+                        if not bot.hit(self.deck.deal_card()):
+                            break
+                    elif action == 'double':
+                        if not bot.double_down(self.deck.deal_card()):
+                            break
+                    elif action == 'split':
+                        if bot.can_split():
+                            bot.split(self.deck.deal_card(), self.deck.deal_card())
+                        else:
+                            print("Nie możesz podzielić tych kart.")
+                    elif action == 'stand':
                         break
-                elif action == 'stand':
-                    break
+                bot.hand_id += 1
 
         #if all(player.get_hand_value() <= 21 for player in [self.main_player] + self.bot_players):
         self.dealer.dealers_turn(self.deck)

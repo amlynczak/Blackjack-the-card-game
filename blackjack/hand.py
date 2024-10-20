@@ -2,6 +2,7 @@ class Hand:
     def __init__(self, hand_name):
         self.cards = []
         self.name = hand_name
+        self.bet = 10
 
     def add_card(self, card):
         """Dodaje kartę do ręki."""
@@ -32,6 +33,11 @@ class Hand:
             print(f"{self.name} przekroczył 21! Przegrywasz.")
             return False
         return True
+    
+    def double_down(self, card):
+        self.bet *= 2
+        self.hit(card)
+        return False
     
     def __str__(self):
         hand_str = ', '.join(str(card) for card in self.cards)

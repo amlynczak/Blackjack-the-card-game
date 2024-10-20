@@ -1,15 +1,16 @@
 class Hand:
     def __init__(self, hand_name):
+        '''Initializes the hand with a name, cards, and bet'''
         self.cards = []
         self.name = hand_name
         self.bet = 10
 
     def add_card(self, card):
-        """Dodaje kartę do ręki."""
+        """Adds a card to the hand."""
         self.cards.append(card)
 
     def get_hand_value(self):
-        """Oblicza wartość punktową ręki, traktując Asa jako 1 lub 11."""
+        """Calculates the value of the hand with aces handled."""
         value = 0
         num_aces = 0
         for card in self.cards:
@@ -17,7 +18,6 @@ class Hand:
             if card.rank == 'A':
                 num_aces += 1
 
-        # Jeśli mamy Asy i suma przekracza 21, traktujemy niektóre Asy jako 1
         while value > 21 and num_aces:
             value -= 10
             num_aces -= 1
@@ -25,6 +25,7 @@ class Hand:
         return value
     
     def hit(self, card):
+        '''Player takes a card from the deck. (for this hand)'''
         self.add_card(card)
         print(f"{card} for {self.name}")
         print(f"{self.name}: {self}")
@@ -35,10 +36,12 @@ class Hand:
         return True
     
     def double_down(self, card):
+        '''Player doubles down'''
         self.bet *= 2
         self.hit(card)
         return False
     
     def __str__(self):
+        '''Returns a string representation of the hand'''
         hand_str = ', '.join(str(card) for card in self.cards)
-        return f"{hand_str} (Punkty: {self.get_hand_value()})"
+        return f"{hand_str} (Points: {self.get_hand_value()})"

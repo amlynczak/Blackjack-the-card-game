@@ -2,15 +2,16 @@ from .player import Player
 
 class Dealer():
     def __init__(self):
+        '''Initializes the dealer with a name and an empty hand'''
         self.name = "Dealer"
         self.hand = []
 
     def add_card(self, card):
-        """Dodaje kartę do ręki krupiera."""
+        """Adds a card to the dealer's hand."""
         self.hand.append(card)
 
     def get_hand_value(self):
-        """Oblicza wartość punktową ręki krupiera, traktując Asa jako 1 lub 11."""
+        """Calculates the value of the dealer's hand with aces handled."""
         value = 0
         num_aces = 0
         for card in self.hand:
@@ -18,7 +19,6 @@ class Dealer():
             if card.rank == 'A':
                 num_aces += 1
 
-        # Jeśli mamy Asy i suma przekracza 21, traktujemy niektóre Asy jako 1
         while value > 21 and num_aces:
             value -= 10
             num_aces -= 1
@@ -26,22 +26,23 @@ class Dealer():
         return value
     
     def dealers_turn(self, deck):
-        """Tura krupiera - krupier dobiera karty zgodnie z zasadami."""
-        print(f"Karty Dealera: {self}")
+        """Starts the dealer's turn, dealing cards until the value is at"""
+        print(f"Dealer's cards: {self}")
         while self.should_hit():
             card = deck.deal_card()
             self.add_card(card)
-            print(f"Dealer dobrał kartę: {card}")
-        print(f"Ręka Dealera: {self}")
+            print(f"Dealer hits: {card}")
+        print(f"Dealer's hand: {self}")
     
     def reset_hand(self):
-        """Czyści rękę krupiera na potrzeby nowej rundy."""
+        """Clears the dealer's hand for a new round."""
         self.hand = []
 
     def should_hit(self):
-        """Sprawdza, czy krupier powinien dobierać kartę (zgodnie z zasadami)."""
+        """Returns True if the dealer should hit, False otherwise."""
         return self.get_hand_value() < 17
     
     def __str__(self):
+        '''Returns a string representation of the dealer's hand'''
         hand_str = ', '.join(str(card) for card in self.hand)
-        return f"{self.name}: {hand_str} (Punkty: {self.get_hand_value()})"
+        return f"{self.name}: {hand_str} (Points: {self.get_hand_value()})"

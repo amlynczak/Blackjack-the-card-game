@@ -4,9 +4,11 @@ import os
 
 class Bot(Player):
     def __init__(self, name="Bot"):
+        '''Initializes the bot with a name, hand, and money'''
         super().__init__(name)
 
     def decide_action(self, dealer_hand):
+        '''Decides the action to take based on the dealer's hand'''
         hand_value = self.get_hand_value()
         rank_to_num = {'2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '10': 9, 'J': 10, 'Q': 11, 'K': 12, 'A': 13}
         

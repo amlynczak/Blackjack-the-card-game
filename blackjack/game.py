@@ -6,7 +6,7 @@ from .bot import Bot
 class BlackjackGame:
     def __init__(self, num_decks=1, num_players=1):
         self.deck = Deck(num_decks)
-        self.main_player = Player(name="Gracz 1")
+        self.main_player = Player(name="Gracz")
         self.bot_players = [Bot(name=f"Bot {i+1}") for i in range(num_players - 1)]
         self.dealer = Dealer()
 
@@ -18,8 +18,8 @@ class BlackjackGame:
         self.dealer.reset_hand()
 
         # Rozdanie dwóch kart graczom i krupierowi
-        self.main_player.add_card(self.deck.deal_card())
-        self.main_player.add_card(self.deck.deal_card())
+        self.main_player.add_card(self.deck.deal_card(), 0)
+        self.main_player.add_card(self.deck.deal_card(), 0)
         for bot in self.bot_players:
             bot.add_card(self.deck.deal_card())
             bot.add_card(self.deck.deal_card())

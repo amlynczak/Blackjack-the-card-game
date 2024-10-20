@@ -1,45 +1,27 @@
 from .card import Card
+from .hand import Hand
 
 class Player:
     def __init__(self, name):
         self.name = name
-        self.hand = []
+        self.hands = [Hand(name + "'s hand")]
         self.money = 1000
         self.bet = 0
+        self.hand_id = 0
 
-    def add_card(self, card):
+    def add_card(self, card, hand_id = 0):
         """Dodaje kartę do ręki gracza."""
-        self.hand.append(card)
+        self.hands[hand_id].add_card(card)
 
-    def get_hand_value(self):
-        """Oblicza wartość punktową ręki gracza, traktując Asa jako 1 lub 11."""
-        value = 0
-        num_aces = 0
-        for card in self.hand:
-            value += card.value()
-            if card.rank == 'A':
-                num_aces += 1
-
-        # Jeśli mamy Asy i suma przekracza 21, traktujemy niektóre Asy jako 1
-        while value > 21 and num_aces:
-            value -= 10
-            num_aces -= 1
-
-        return value
+    def get_hand_value(self, hand_id = 0):
+        return self.hands[hand_id].get_hand_value()
 
     def reset_hand(self):
         """Czyści rękę gracza na potrzeby nowej rundy."""
-        self.hand = []
+        self.hands = [Hand(self.name + "'s hand")]
 
-    def hit(self, card):
-        self.add_card(card)
-        print(f"{card} for {self.name}")
-        print(f"{self.name}: {self}")
-
-        if self.get_hand_value() > 21:
-            print(f"{self.name} przekroczył 21! Przegrywasz.")
-            return False
-        return True
+    def hit(self, card, hand_id = 0):
+        return self.hands[hand_id].hit(card)
     
     def double_down(self, card):
         self.bet *= 2
@@ -55,5 +37,5 @@ class Player:
             return Player(name=f"{self.name} (split)", hand=[card], money=self.money, bet=self.bet)
     
     def __str__(self):
-        hand_str = ', '.join(str(card) for card in self.hand)
+        hand_str = ', '.join(str(card) for card in self.hands[0].cards)
         return f"{self.name}: {hand_str} (Punkty: {self.get_hand_value()})"

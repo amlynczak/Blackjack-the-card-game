@@ -3,7 +3,8 @@ class Hand:
         '''Initializes the hand with a name, cards, and bet'''
         self.cards = []
         self.name = hand_name
-        self.bet = 10
+        self.bet = 20
+        self.isBlackjack = False
 
     def add_card(self, card):
         """Adds a card to the hand."""

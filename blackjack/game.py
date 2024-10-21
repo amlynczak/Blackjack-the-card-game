@@ -2,6 +2,7 @@ from .deck import Deck
 from .player import Player
 from .dealer import Dealer
 from .bot import Bot
+import time
 
 class BlackjackGame:
     def __init__(self, num_decks=1, num_players=1):
@@ -27,9 +28,23 @@ class BlackjackGame:
         self.dealer.add_card(self.deck.deal_card())
         self.dealer.add_card(self.deck.deal_card())
 
-        print(f"{self.main_player}")
+        if self.main_player.get_hand_value() == 21:
+            print("♣♦♥♠ Blackjack! ♣♦♥♠")
+            time.sleep(5)
+            self.main_player.has_blackjack = True
+            self.main_player.hands[self.main_player.hand_id].isBlackjack = True
+            print(f"{self.main_player} Blackjack!")
+        else:
+            print(f"{self.main_player}")
+
         for bot in self.bot_players:
-            print(f"{bot}")
+            if bot.get_hand_value() == 21:
+                bot.has_blackjack = True
+                bot.hands[bot.hand_id].isBlackjack = True
+                print(f"{bot} Blackjack!")
+            else:
+                print(f"{bot}")
+        
         print(f"Dealer: {self.dealer.hand[0]} and one [hidden] card")
 
     def check_winner(self):
@@ -40,20 +55,37 @@ class BlackjackGame:
         players = [self.main_player] + self.bot_players
         for player in players:
             for hand in player.hands:
+                if hand.isBlackjack:
+                    if dealer_value == 21 and len(self.dealer.hand) == 2:
+                        results.append(f"{hand.name}: Draw!")
+                        player.money += hand.bet
+                    else:
+                        results.append(f"{hand.name} won!")
+                        player.money += hand.bet * 2.5
+                    continue
                 hand_value = hand.get_hand_value()
                 if hand_value > 21:
                     results.append(f"{hand.name}: Dealer won!")
                 elif dealer_value > 21:
-                    results.append(f"{player.name}: {hand.name} won!")
+                    results.append(f"{hand.name} won!")
                     player.money += hand.bet * 2
+                elif hand_value == 21 and dealer_value == 21 and len(self.dealer.hand) == 2:
+                    results.append(f"{hand.name}: Dealer won!")
                 elif hand_value > dealer_value:
-                    results.append(f"{player.name}: {hand.name} won!")
+                    results.append(f"{hand.name} won!")
                     player.money += hand.bet * 2
                 elif dealer_value > hand_value:
                     results.append(f"{hand.name}: Dealer won!")
                 else:
                     results.append(f"{hand.name}: Draw!")
                     player.money += hand.bet
+
+            if dealer_value == 21 and len(self.dealer.hand) == 2 and player.isInsured:
+                if player.isInsured:
+                    results.append(f"{player.name}: Insurance won!")
+                    player.money += player.insurance_bet * 2
+                else:
+                    results.append(f"{player.name}: Insurance lost!") 
 
         return results
 
@@ -63,22 +95,27 @@ class BlackjackGame:
         
         # Main player turn
         while self.main_player.hand_id < len(self.main_player.hands):
-            while True:
-                action = input("What's your action (hit/double/split/stand): ").lower()
+            while True and self.main_player.hands[self.main_player.hand_id].isBlackjack == False:
+                action = input("What's your action (hit/double/split/stand/insurance): ").lower()
                 if action == 'hit':
-                    if not self.main_player.hit(self.deck.deal_card()):
+                    if not self.main_player.hit(self.deck.deal_card(), self.main_player.hand_id):
                         break
                 elif action == 'double':
                     if self.main_player.can_double_down():
-                        if not self.main_player.double_down(self.deck.deal_card()):
+                        if not self.main_player.double_down(self.deck.deal_card(), self.main_player.hand_id):
                             break
                     else:
-                        print("You can't double down. Try again with a different action.")
+                        print("You can't double down. (You can only double down if you have two cards). Try again with a different action.")
                 elif action == 'split':
                     if self.main_player.can_split():
                         self.main_player.split(self.deck.deal_card(), self.deck.deal_card())
                     else:
-                        print("You can't split these cards. Try again with a different action.")
+                        print("You can't split these cards. (You can only split if you have two cards of the same rank). Try again with a different action.")
+                elif action == 'insurance':
+                    if self.main_player.can_insurance(self.dealer.hand):
+                        self.main_player.insurance(self.dealer.hand)
+                    else:
+                        print("You can't take insurance. (Dealer's card is not an Ace). Try again with a different action.")
                 elif action == 'stand':
                     break
                 else:
@@ -88,7 +125,7 @@ class BlackjackGame:
         # Bot players turn
         for bot in self.bot_players:
             while bot.hand_id < len(bot.hands):
-                while True:
+                while True and bot.hands[bot.hand_id].isBlackjack == False:
                     action = bot.decide_action(self.dealer.hand)
                     print(f"{bot.name} choose to: {action}")
                     if action == 'hit':

@@ -7,8 +7,11 @@ class Player:
         self.name = name
         self.hands = [Hand(name + "'s hand")]
         self.money = 1000
+        self.has_blackjack = False
         self.hand_id = 0
-        self.standard_bet = 10
+        self.standard_bet = 20
+        self.insurance_bet = 0
+        self.isInsured = False
 
     def add_card(self, card, hand_id = 0):
         """Adds a card to the player's hand."""
@@ -23,6 +26,8 @@ class Player:
         self.hands = [Hand(self.name + "'s hand")]
         self.money -= self.standard_bet
         self.hand_id = 0
+        self.insurance_bet = 0
+        self.isInsured = False
 
     def hit(self, card, hand_id = 0):
         """Player takes a card from the deck."""
@@ -66,6 +71,17 @@ class Player:
 
             for hand in self.hands:
                 print(f"{hand.name}: {hand}")
+
+    def can_insurance(self, dealer_hand):
+        '''Checks if the player can take insurance'''
+        return dealer_hand[0].rank == 'A'
+
+    def insurance(self, dealer_hand):
+        '''Player takes insurance'''
+        if self.can_insurance(dealer_hand):
+            self.insurance_bet = self.standard_bet / 2
+            self.money -= self.insurance_bet
+            self.isInsured = True
     
     def __str__(self):
         '''Returns the player's name and hand'''

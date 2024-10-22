@@ -7,11 +7,11 @@ class Player:
         self.name = name
         self.hands = [Hand(name + "'s hand")]
         self.money = 1000
-        self.has_blackjack = False
         self.hand_id = 0
         self.standard_bet = 20
         self.insurance_bet = 0
         self.isInsured = False
+        self.has_surrenderred = False
 
     def add_card(self, card, hand_id = 0):
         """Adds a card to the player's hand."""
@@ -28,6 +28,7 @@ class Player:
         self.hand_id = 0
         self.insurance_bet = 0
         self.isInsured = False
+        self.has_surrenderred = False
 
     def hit(self, card, hand_id = 0):
         """Player takes a card from the deck."""
@@ -83,6 +84,17 @@ class Player:
             self.money -= self.insurance_bet
             self.isInsured = True
     
+    def can_surrender(self):
+        '''Checks if the player can surrender'''
+        return self.hands[self.hand_id].cards.__len__() == 2
+    
+    def surrender(self):
+        '''Player surrenders'''
+        if self.can_surrender():
+            self.money += self.standard_bet / 2
+            self.has_surrenderred = True
+        return False
+
     def __str__(self):
         '''Returns the player's name and hand'''
         hand_str = ', '.join(str(card) for card in self.hands[0].cards)

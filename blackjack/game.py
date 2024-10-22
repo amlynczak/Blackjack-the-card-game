@@ -55,6 +55,9 @@ class BlackjackGame:
         players = [self.main_player] + self.bot_players
         for player in players:
             for hand in player.hands:
+                if player.has_surrenderred:
+                    results.append(f"{hand.name}: Surrendered!")
+                    continue
                 if hand.isBlackjack:
                     if dealer_value == 21 and len(self.dealer.hand) == 2:
                         results.append(f"{hand.name}: Draw!")
@@ -96,7 +99,7 @@ class BlackjackGame:
         # Main player turn
         while self.main_player.hand_id < len(self.main_player.hands):
             while True and self.main_player.hands[self.main_player.hand_id].isBlackjack == False:
-                action = input("What's your action (hit/double/split/stand/insurance): ").lower()
+                action = input("What's your action (hit/double/split/stand/insurance/surrender): ").lower()
                 if action == 'hit':
                     if not self.main_player.hit(self.deck.deal_card(), self.main_player.hand_id):
                         break
@@ -116,6 +119,12 @@ class BlackjackGame:
                         self.main_player.insurance(self.dealer.hand)
                     else:
                         print("You can't take insurance. (Dealer's card is not an Ace). Try again with a different action.")
+                elif action == 'surrender':
+                    if self.main_player.can_surrender():
+                        self.main_player.surrender()
+                        break
+                    else:
+                        print("You can't surrender. (You can do it only on first two cards). Try again with a different action.")
                 elif action == 'stand':
                     break
                 else:

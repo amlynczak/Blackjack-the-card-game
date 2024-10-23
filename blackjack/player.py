@@ -5,10 +5,9 @@ class Player:
     def __init__(self, name):
         '''Initializes the player with a name, hand, and money'''
         self.name = name
-        self.hands = [Hand(name + "'s hand")]
+        self.hands = [Hand(name + "'s hand", bet = 0)]
         self.money = 1000
         self.hand_id = 0
-        self.standard_bet = 20
         self.insurance_bet = 0
         self.isInsured = False
         self.has_surrenderred = False
@@ -21,10 +20,10 @@ class Player:
         '''Calculates the value of the player's hand'''
         return self.hands[hand_id].get_hand_value()
 
-    def reset_hand(self):
+    def reset_hand(self, standard_bet):
         """Clears the player's hand for a new round."""
-        self.hands = [Hand(self.name + "'s hand")]
-        self.money -= self.standard_bet
+        self.hands = [Hand(self.name + "'s hand", standard_bet)]
+        self.money -= standard_bet
         self.hand_id = 0
         self.insurance_bet = 0
         self.isInsured = False
@@ -41,7 +40,7 @@ class Player:
     def double_down(self, card, hand_id = 0):
         '''Player doubles down'''
         if self.can_double_down(hand_id):
-            self.money -= self.standard_bet
+            self.money -= self.hands[hand_id].bet
             return self.hands[hand_id].double_down(card)
     
     def can_split(self):
@@ -53,17 +52,18 @@ class Player:
         if self.can_split():
             # Remove the hand to be split
             original_hand = self.hands.pop(self.hand_id)
+            self.money += original_hand.bet
 
             # Create two new hands
-            new_hand1 = Hand(original_hand.name + " - 1")
-            new_hand2 = Hand(original_hand.name + " - 2")
+            new_hand1 = Hand(original_hand.name + " - 1", original_hand.bet)
+            self.money -= original_hand.bet
+            new_hand2 = Hand(original_hand.name + " - 2", original_hand.bet)
+            self.money -= original_hand.bet
 
             # Add one card from the original hand to each new hand
             new_hand1.add_card(original_hand.cards[0])
-            new_hand1.bet = self.standard_bet
             new_hand1.add_card(new_card1)
             new_hand2.add_card(original_hand.cards[1])
-            new_hand2.bet = self.standard_bet
             new_hand2.add_card(new_card2)
 
             # Add the new hands to the player's hands
@@ -75,12 +75,12 @@ class Player:
 
     def can_insurance(self, dealer_hand):
         '''Checks if the player can take insurance'''
-        return dealer_hand[0].rank == 'A'
+        return dealer_hand[0].rank == 'A' and self.isInsured == False
 
     def insurance(self, dealer_hand):
         '''Player takes insurance'''
         if self.can_insurance(dealer_hand):
-            self.insurance_bet = self.standard_bet / 2
+            self.insurance_bet = self.hands[self.hand_id].bet / 2
             self.money -= self.insurance_bet
             self.isInsured = True
     
@@ -91,7 +91,7 @@ class Player:
     def surrender(self):
         '''Player surrenders'''
         if self.can_surrender():
-            self.money += self.standard_bet / 2
+            self.money += self.hands[self.hand_id].bet / 2
             self.has_surrenderred = True
         return False
 

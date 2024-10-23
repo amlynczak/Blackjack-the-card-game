@@ -5,33 +5,35 @@ from .bot import Bot
 import time
 
 class BlackjackGame:
-    def __init__(self, num_decks=1, num_players=1):
+    def __init__(self, num_decks=1, num_players=1, standard_bet=20):
         '''Initializes the game with a number of decks and players'''
         self.deck = Deck(num_decks)
+        self.standard_bet = standard_bet
         self.main_player = Player(name="Player")
         self.bot_players = [Bot(name=f"Bot {i+1}") for i in range(num_players - 1)]
         self.dealer = Dealer()
 
     def start_new_round(self):
         """start for a new round"""
-        self.main_player.reset_hand()
+        self.main_player.reset_hand(self.standard_bet)
         for bot in self.bot_players:
-            bot.reset_hand()
+            bot.reset_hand(self.standard_bet)
         self.dealer.reset_hand()
 
         #deal cards
-        self.main_player.add_card(self.deck.deal_card(), 0)
-        self.main_player.add_card(self.deck.deal_card(), 0)
+        self.main_player.add_card(self.deck.deal_card())
+        self.main_player.add_card(self.deck.deal_card())
+
         for bot in self.bot_players:
             bot.add_card(self.deck.deal_card())
             bot.add_card(self.deck.deal_card())
+        
         self.dealer.add_card(self.deck.deal_card())
         self.dealer.add_card(self.deck.deal_card())
 
         if self.main_player.get_hand_value() == 21:
             print("♣♦♥♠ Blackjack! ♣♦♥♠")
             time.sleep(5)
-            self.main_player.has_blackjack = True
             self.main_player.hands[self.main_player.hand_id].isBlackjack = True
             print(f"{self.main_player} Blackjack!")
         else:
@@ -39,7 +41,6 @@ class BlackjackGame:
 
         for bot in self.bot_players:
             if bot.get_hand_value() == 21:
-                bot.has_blackjack = True
                 bot.hands[bot.hand_id].isBlackjack = True
                 print(f"{bot} Blackjack!")
             else:
@@ -99,6 +100,7 @@ class BlackjackGame:
         # Main player turn
         while self.main_player.hand_id < len(self.main_player.hands):
             while True and self.main_player.hands[self.main_player.hand_id].isBlackjack == False:
+                print(f"\n{self.main_player}")
                 action = input("What's your action (hit/double/split/stand/insurance/surrender): ").lower()
                 if action == 'hit':
                     if not self.main_player.hit(self.deck.deal_card(), self.main_player.hand_id):
@@ -118,7 +120,7 @@ class BlackjackGame:
                     if self.main_player.can_insurance(self.dealer.hand):
                         self.main_player.insurance(self.dealer.hand)
                     else:
-                        print("You can't take insurance. (Dealer's card is not an Ace). Try again with a different action.")
+                        print("You can't take insurance. (Dealer's card is not an Ace or you're already insured). Try again with a different action.")
                 elif action == 'surrender':
                     if self.main_player.can_surrender():
                         self.main_player.surrender()
@@ -135,6 +137,7 @@ class BlackjackGame:
         for bot in self.bot_players:
             while bot.hand_id < len(bot.hands):
                 while True and bot.hands[bot.hand_id].isBlackjack == False:
+                    print(f"\n{bot}")
                     action = bot.decide_action(self.dealer.hand)
                     print(f"{bot.name} choose to: {action}")
                     if action == 'hit':

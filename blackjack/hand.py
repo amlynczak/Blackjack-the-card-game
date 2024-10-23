@@ -1,9 +1,9 @@
 class Hand:
-    def __init__(self, hand_name):
+    def __init__(self, hand_name, bet):
         '''Initializes the hand with a name, cards, and bet'''
         self.cards = []
         self.name = hand_name
-        self.bet = 20
+        self.bet = bet
         self.isBlackjack = False
 
     def add_card(self, card):

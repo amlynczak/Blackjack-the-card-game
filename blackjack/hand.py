@@ -32,7 +32,7 @@ class Hand:
         print(f"{self.name}: {self}")
 
         if self.get_hand_value() > 21:
-            print(f"{self.name} przekroczył 21! Przegrywasz.")
+            print(f"{self.name} is over 21! You lost.")
             return False
         return True
     

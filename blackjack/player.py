@@ -2,11 +2,11 @@ from .card import Card
 from .hand import Hand
 
 class Player:
-    def __init__(self, name):
+    def __init__(self, name, money = 1000):
         '''Initializes the player with a name, hand, and money'''
         self.name = name
         self.hands = [Hand(name + "'s hand", bet = 0)]
-        self.money = 1000
+        self.money = money
         self.hand_id = 0
         self.insurance_bet = 0
         self.isInsured = False

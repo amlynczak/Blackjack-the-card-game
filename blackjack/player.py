@@ -19,6 +19,9 @@ class Player:
     def get_hand_value(self, hand_id = 0):
         '''Calculates the value of the player's hand'''
         return self.hands[hand_id].get_hand_value()
+    
+    def can_play(self, standard_bet):
+        return self.money >= standard_bet
 
     def reset_hand(self, standard_bet):
         """Clears the player's hand for a new round."""
@@ -35,7 +38,7 @@ class Player:
     
     def can_double_down(self, hand_id = 0):
         '''Checks if the player can double down'''
-        return self.hands[self.hand_id].cards.__len__() == 2
+        return self.hands[self.hand_id].cards.__len__() == 2 and self.money >= self.hands[hand_id].bet
     
     def double_down(self, card, hand_id = 0):
         '''Player doubles down'''
@@ -45,7 +48,7 @@ class Player:
     
     def can_split(self):
         '''Checks if the player can split'''
-        return self.hands[self.hand_id].cards.__len__() == 2 and self.hands[self.hand_id].cards[0].rank == self.hands[self.hand_id].cards[1].rank
+        return self.hands[self.hand_id].cards.__len__() == 2 and self.hands[self.hand_id].cards[0].rank == self.hands[self.hand_id].cards[1].rank and self.money >= self.hands[self.hand_id].bet
     
     def split(self, new_card1, new_card2):
         '''Player splits the hand'''
@@ -75,7 +78,7 @@ class Player:
 
     def can_insurance(self, dealer_hand):
         '''Checks if the player can take insurance'''
-        return dealer_hand[0].rank == 'A' and self.isInsured == False
+        return dealer_hand[0].rank == 'A' and self.isInsured == False and self.money >= self.hands[self.hand_id].bet / 2
 
     def insurance(self, dealer_hand):
         '''Player takes insurance'''
@@ -97,5 +100,5 @@ class Player:
 
     def __str__(self):
         '''Returns the player's name and hand'''
-        hand_str = ', '.join(str(card) for card in self.hands[0].cards)
+        hand_str = ', '.join(str(card) for card in self.hands[self.hand_id].cards)
         return f"{self.name}: {hand_str} (Points: {self.get_hand_value()})"

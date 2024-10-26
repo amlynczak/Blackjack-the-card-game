@@ -3,9 +3,9 @@ import random
 import os
 
 class Bot(Player):
-    def __init__(self, name="Bot"):
+    def __init__(self, name="Bot", money = 1000):
         '''Initializes the bot with a name, hand, and money'''
-        super().__init__(name)
+        super().__init__(name, money)
 
     def decide_action(self, dealer_hand):
         '''Decides the action to take based on the dealer's hand'''
@@ -22,7 +22,10 @@ class Bot(Player):
                 for line in file:
                     if line.startswith(self.hands[self.hand_id].cards[0].rank):
                         action = line.split()[dealer_card_num]
-                        break
+                        if self.can_split() and action == 'P':
+                            break
+                        else:
+                            action = 'U'
         elif 'A' in [card.rank for card in self.hands[self.hand_id].cards]:
             non_ace_card = [card for card in self.hands[self.hand_id].cards if card.rank != 'A'][0]
             file_path = os.path.join(os.path.dirname(__file__), "../assets/basic_strategy/pairs_with_aces")

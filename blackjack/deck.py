@@ -23,8 +23,3 @@ class Deck:
         if len(self.cards) == 0:
             self.build_deck()
         return self.cards.pop()
-    
-    def remaining_cards(self):
-        '''Returns the number of cards remaining in the deck'''
-        return len(self.cards)
-    

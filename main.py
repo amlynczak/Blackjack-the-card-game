@@ -1,6 +1,8 @@
 from blackjack.game import BlackjackGame
+from ui.main_screen import start_ui
 
 def main():
+
     num_decks = 0
     while(num_decks < 1 or num_decks > 8):
         num_decks = int(input("Put the number of decks you want to play with (1-8): "))

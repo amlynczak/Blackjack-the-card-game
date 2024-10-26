@@ -9,15 +9,25 @@ class BlackjackGame:
         '''Initializes the game with a number of decks and players'''
         self.deck = Deck(num_decks)
         self.standard_bet = standard_bet
-        self.main_player = Player(name="Player")
-        self.bot_players = [Bot(name=f"Bot {i+1}") for i in range(num_players - 1)]
+        self.main_player = Player(name="Player", money = 200)
+        self.bot_players = [Bot(name=f"Bot {i+1}", money = 60) for i in range(num_players - 1)]
         self.dealer = Dealer()
 
     def start_new_round(self):
         """start for a new round"""
-        self.main_player.reset_hand(self.standard_bet)
+        if self.main_player.can_play(self.standard_bet):
+            self.main_player.reset_hand(self.standard_bet)
+        else:
+            print("You don't have enough money to play. Game over.")
+            exit()
+            
         for bot in self.bot_players:
-            bot.reset_hand(self.standard_bet)
+            if bot.can_play(self.standard_bet):
+                bot.reset_hand(self.standard_bet)
+            else:
+                print(f"{bot.name} doesn't have enough money to play.")
+                self.bot_players.remove(bot)
+
         self.dealer.reset_hand()
 
         #deal cards
@@ -100,7 +110,7 @@ class BlackjackGame:
         # Main player turn
         while self.main_player.hand_id < len(self.main_player.hands):
             while True and self.main_player.hands[self.main_player.hand_id].isBlackjack == False:
-                print(f"\n{self.main_player}")
+                print(f"\n{self.main_player.hands[self.main_player.hand_id]}")
                 action = input("What's your action (hit/double/split/stand/insurance/surrender): ").lower()
                 if action == 'hit':
                     if not self.main_player.hit(self.deck.deal_card(), self.main_player.hand_id):
@@ -161,4 +171,8 @@ class BlackjackGame:
 
         print(f"AGH-coins balance for {self.main_player.name}: {self.main_player.money}")
         for bot in self.bot_players:
-            print(f"AGH-coins balance for {bot.name}: {bot.money}")
+            if bot.money == 0:
+                print(f"{bot.name} is out of money.")
+                self.bot_players.remove(bot)
+            else:
+                print(f"AGH-coins balance for {bot.name}: {bot.money}")

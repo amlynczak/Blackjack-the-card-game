@@ -1,5 +1,5 @@
 from blackjack.game import BlackjackGame
-from ui.main_screen import start_ui
+from ui.starting_screen import StartScreen
 
 def main():
 
@@ -19,7 +19,8 @@ def main():
     #    if play_again != 'yes':
     #        break
 
-    start_ui()
+    start_screen = StartScreen()
+    start_screen.run()
 
 if __name__ == "__main__":
     main()

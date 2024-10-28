@@ -2,6 +2,7 @@ import pygame
 import sys
 
 from ui.utils import draw_button, draw_text
+from ui.game_screen import GameScreen
 
 def choose_table(screen):
     screen.fill((0, 0, 0))
@@ -22,7 +23,7 @@ def choose_table(screen):
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if rect1.collidepoint(event.pos):
-                    return 'table1'
+                    GameScreen().run()
                 elif rect2.collidepoint(event.pos):
                     return 'table2'
 

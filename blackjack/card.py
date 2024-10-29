@@ -6,13 +6,13 @@ class Card:
 
     def __str__(self):
         '''Returns a string representation of the card'''
-        return f"{self.rank}{self.suit}"
+        return f"{self.rank}_of_{self.suit}"
     
     def value(self):
         '''Returns the value of the card'''
-        if self.rank in ['J', 'Q', 'K']:
+        if self.rank in ['jack', 'queen', 'king']:
             return 10
-        elif self.rank == 'A':
+        elif self.rank == 'ace':
             return 11 #Ace can have value of 1, but we will handle that later
         else:
             return int(self.rank)

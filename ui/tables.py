@@ -2,7 +2,7 @@ import pygame
 import sys
 
 from ui.utils import draw_button, draw_text
-from ui.game_screen import GameScreen
+from ui.game_screen import BlackjackGame as GameScreen
 
 def choose_table(screen):
     screen.fill((0, 0, 0))

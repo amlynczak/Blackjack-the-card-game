@@ -10,9 +10,9 @@ class Card:
     
     def value(self):
         '''Returns the value of the card'''
-        if self.rank in ['jack', 'queen', 'king']:
+        if self.rank in ['J', 'Q', 'K']:
             return 10
-        elif self.rank == 'ace':
+        elif self.rank == 'A':
             return 11 #Ace can have value of 1, but we will handle that later
         else:
             return int(self.rank)

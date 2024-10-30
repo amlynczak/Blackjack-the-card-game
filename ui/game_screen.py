@@ -9,10 +9,12 @@ from blackjack.player import Player
 from blackjack.dealer import Dealer
 from blackjack.bot import Bot
 
+from ui.utils import draw_text, draw_button, display_game_state
+
 pygame.init()
 
-SCREEEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEEN_WIDTH = 1000
+SCREEN_HEIGHT = 700
 WHITE = (255, 255, 255)
 GREEN = (0, 128, 0)
 BLACK = (0, 0, 0)
@@ -26,11 +28,11 @@ card_images['back'] = pygame.transform.scale(pygame.image.load("assets/images/ca
 for suit in ['spades', 'hearts', 'diamonds', 'clubs']:
     for value in range(2, 11):
         card_images[f"{value}_of_{suit}"] = pygame.transform.scale(pygame.image.load(f"assets/images/cards/{value}_of_{suit}.png"), (CARD_WIDTH, CARD_HEIGHT))
-    for face in ['jack', 'queen', 'king', 'ace']:
+    for face in ['J', 'Q', 'K', 'A']:
         card_images[f"{face}_of_{suit}"] = pygame.transform.scale(pygame.image.load(f"assets/images/cards/{face}_of_{suit}.png"), (CARD_WIDTH, CARD_HEIGHT))
 
 class BlackjackGame:
-    def __init__(self, number_of_decks = 1, number_of_players = 1, standard_bet = 20) -> None:
+    def __init__(self, number_of_decks = 1, number_of_players = 4, standard_bet = 20) -> None:
         self.deck = Deck(number_of_decks)
         self.standard_bet = standard_bet
         self.main_player = Player(name="Player", money = 200)
@@ -134,7 +136,7 @@ class BlackjackGame:
         # Main player turn
         while self.main_player.hand_id < len(self.main_player.hands):
             while True and self.main_player.hands[self.main_player.hand_id].isBlackjack == False:
-                self.display_game_state()
+                display_game_state(screen, self.main_player, self.dealer, self.bot_players, card_images, self.font)
                 action = self.get_player_action()
                 if action == 'hit':
                     if not self.main_player.hit(self.deck.deal_card(), self.main_player.hand_id):
@@ -173,9 +175,11 @@ class BlackjackGame:
                             bot.split(self.deck.deal_card(), self.deck.deal_card())
                     elif action == 'stand':
                         break
+                    display_game_state(screen, self.main_player, self.dealer, self.bot_players, card_images, self.font)
+                    time.sleep(5)
                 bot.hand_id += 1
 
-        self.dealers_turn_visualized()
+        self.dealer.dealers_turn(self.deck, screen, self.main_player, self.bot_players, card_images, self.font)
 
         results = self.check_winner()
         for result in results:
@@ -187,40 +191,7 @@ class BlackjackGame:
                 print(f"{bot.name} is out of money.")
                 self.bot_players.remove(bot)
             else:
-                print(f"AGH-coins balance for {bot.name}: {bot.money}")
-
-    def display_game_state(self):
-        screen.fill(GREEN)
-        self.display_hand(self.main_player.hands, 100, 400)
-        self.display_hand_dealer(self.dealer.hand, 100, 100)
-        for i, bot in enumerate(self.bot_players):
-            self.display_hand(bot.hands, 100, 200 + i * 100)
-        pygame.display.flip()
-
-    def display_hand(self, hands, x, y):
-        for i, hand in enumerate(hands):
-            for j, card in enumerate(hand.cards):
-                screen.blit(card_images[str(card)], (x + j * 100, y + i * 100))
-            text = self.font.render(f"{hand.name}: {hand.get_hand_value()}", True, WHITE)
-            screen.blit(text, (x, y + i * 100 + 80))
-            if hand.isBlackjack:
-                text = self.font.render("Blackjack!", True, WHITE)
-                screen.blit(text, (x + 200, y + i * 100 + 80))
-
-    def display_hand_dealer(self, hand, x, y):
-        for i, card in enumerate(hand):
-            if i == 0:
-                screen.blit(card_images[str(card)], (x + i * 100, y))
-            else:
-                screen.blit(card_images['back'], (x + i * 100, y))
-        text = self.font.render(f"Dealer: {hand[0]}", True, WHITE)
-        screen.blit(text, (x, y + 80))
-
-    def dealers_turn_visualized(self):
-        while self.dealer.should_hit():
-            self.dealer.add_card(self.deck.deal_card())
-            self.display_game_state()
-            time.sleep(5)     
+                print(f"AGH-coins balance for {bot.name}: {bot.money}")   
 
     def get_player_action(self):
         while True:

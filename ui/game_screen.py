@@ -31,6 +31,14 @@ for suit in ['spades', 'hearts', 'diamonds', 'clubs']:
     for face in ['J', 'Q', 'K', 'A']:
         card_images[f"{face}_of_{suit}"] = pygame.transform.scale(pygame.image.load(f"assets/images/cards/{face}_of_{suit}.png"), (CARD_WIDTH, CARD_HEIGHT))
 
+card_images_bots = {}
+card_images_bots['back'] = pygame.transform.scale(pygame.image.load("assets/images/cards/back.jpg"), (40, 60))
+for suit in ['spades', 'hearts', 'diamonds', 'clubs']:
+    for value in range(2, 11):
+        card_images_bots[f"{value}_of_{suit}"] = pygame.transform.scale(pygame.image.load(f"assets/images/cards/{value}_of_{suit}.png"), (40, 60))
+    for face in ['J', 'Q', 'K', 'A']:
+        card_images_bots[f"{face}_of_{suit}"] = pygame.transform.scale(pygame.image.load(f"assets/images/cards/{face}_of_{suit}.png"), (40, 60))
+
 class BlackjackGame:
     def __init__(self, number_of_decks = 1, number_of_players = 4, standard_bet = 20) -> None:
         self.deck = Deck(number_of_decks)
@@ -39,6 +47,7 @@ class BlackjackGame:
         self.bot_players = [Bot(name=f"Bot {i+1}", money = 60) for i in range(number_of_players - 1)]
         self.dealer = Dealer()
         self.font = pygame.font.Font(None, 36)
+        self.players_turn = random.randint(1, number_of_players)
 
     def start_new_round(self):
         if self.main_player.can_play(self.standard_bet):
@@ -56,11 +65,14 @@ class BlackjackGame:
 
         self.dealer.reset_hand()
 
-        #deal cards
+        for bot in self.bot_players[:self.players_turn]:
+            bot.add_card(self.deck.deal_card())
+            bot.add_card(self.deck.deal_card())
+
         self.main_player.add_card(self.deck.deal_card())
         self.main_player.add_card(self.deck.deal_card())
 
-        for bot in self.bot_players:
+        for bot in self.bot_players[self.players_turn: len(self.bot_players)]:
             bot.add_card(self.deck.deal_card())
             bot.add_card(self.deck.deal_card())
         
@@ -83,6 +95,8 @@ class BlackjackGame:
                 print(f"{bot}")
         
         print(f"Dealer: {self.dealer.hand[0]} and one [hidden] card")
+
+        display_game_state(screen, self.main_player, self.dealer, self.bot_players, card_images, card_images_bots, self.font)
 
 
     def check_winner(self):
@@ -126,17 +140,51 @@ class BlackjackGame:
                     player.money += player.insurance_bet * 2
                 else:
                     results.append(f"{player.name}: Insurance lost!") 
-
+        screen.fill(GREEN)
+        draw_text("Results", self.font, WHITE, screen, 450, 50)
+        y = 100
+        for result in results:
+            draw_text(result, self.font, WHITE, screen, 450, y)
+            y += 50
+        pygame.display.flip()
+        time.sleep(5)
         return results
     
-    def play(self):
+    def play_round(self):
         """Plays a game of blackjack"""
         self.start_new_round()
+
+        print(self.bot_players[:self.players_turn])
+        print(self.bot_players[(self.players_turn+1):])
+        
+        for bot in self.bot_players[:self.players_turn]:
+            while bot.hand_id < len(bot.hands):
+                while True and bot.hands[bot.hand_id].isBlackjack == False:
+                    time.sleep(2)
+                    action = bot.decide_action(self.dealer.hand)
+                    if action == 'hit':
+                        print(f"{bot.name} hits")
+                        if not bot.hit(self.deck.deal_card()):
+                            break
+                    elif action == 'double':
+                        print(f"{bot.name} doubles down")
+                        if not bot.double_down(self.deck.deal_card()):
+                            break
+                    elif action == 'split':
+                        if bot.can_split():
+                            print(f"{bot.name} splits")
+                            bot.split(self.deck.deal_card(), self.deck.deal_card())
+                    elif action == 'stand':
+                        print(f"{bot.name} stands")
+                        break
+                    display_game_state(screen, self.main_player, self.dealer, self.bot_players, card_images, card_images_bots, self.font)
+                bot.hand_id += 1
         
         # Main player turn
+        print("player's turn")
         while self.main_player.hand_id < len(self.main_player.hands):
             while True and self.main_player.hands[self.main_player.hand_id].isBlackjack == False:
-                display_game_state(screen, self.main_player, self.dealer, self.bot_players, card_images, self.font)
+                display_game_state(screen, self.main_player, self.dealer, self.bot_players, card_images, card_images_bots, self.font)
                 action = self.get_player_action()
                 if action == 'hit':
                     if not self.main_player.hit(self.deck.deal_card(), self.main_player.hand_id):
@@ -157,29 +205,37 @@ class BlackjackGame:
                         break
                 elif action == 'stand':
                     break
+            display_game_state(screen, self.main_player, self.dealer, self.bot_players, card_images, card_images_bots, self.font)
             self.main_player.hand_id += 1
 
         # Bot players turn
-        for bot in self.bot_players:
+        for bot in self.bot_players[(self.players_turn+1):]:
             while bot.hand_id < len(bot.hands):
                 while True and bot.hands[bot.hand_id].isBlackjack == False:
+                    time.sleep(2)
                     action = bot.decide_action(self.dealer.hand)
+                    print(f"{bot.name} choose to: {action}")
                     if action == 'hit':
+                        print(f"{bot.name} hits")
                         if not bot.hit(self.deck.deal_card()):
                             break
                     elif action == 'double':
+                        print(f"{bot.name} doubles down")
                         if not bot.double_down(self.deck.deal_card()):
                             break
                     elif action == 'split':
                         if bot.can_split():
+                            print(f"{bot.name} splits")
                             bot.split(self.deck.deal_card(), self.deck.deal_card())
                     elif action == 'stand':
+                        print(f"{bot.name} stands")
                         break
-                    display_game_state(screen, self.main_player, self.dealer, self.bot_players, card_images, self.font)
-                    time.sleep(5)
+                    display_game_state(screen, self.main_player, self.dealer, self.bot_players, card_images, card_images_bots, self.font)
                 bot.hand_id += 1
 
-        self.dealer.dealers_turn(self.deck, screen, self.main_player, self.bot_players, card_images, self.font)
+        display_game_state(screen, self.main_player, self.dealer, self.bot_players, card_images, card_images_bots, self.font, True)
+        self.dealer.dealers_turn(self.deck, screen, self.main_player, self.bot_players, card_images, card_images_bots, self.font)
+        time.sleep(5)
 
         results = self.check_winner()
         for result in results:
@@ -191,7 +247,30 @@ class BlackjackGame:
                 print(f"{bot.name} is out of money.")
                 self.bot_players.remove(bot)
             else:
-                print(f"AGH-coins balance for {bot.name}: {bot.money}")   
+                print(f"AGH-coins balance for {bot.name}: {bot.money}")  
+
+    def play(self):
+        while True:
+            self.play_round()
+            screen.fill(GREEN)
+            draw_text("Want to play another round?", self.font, WHITE, screen, 350, 250)
+            draw_button("Yes", self.font, WHITE, screen, 350, 350, 100, 50)
+            draw_button("No", self.font, WHITE, screen, 550, 350, 100, 50)
+            pygame.display.flip()
+            play_again = ''
+            while play_again == '':
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        x, y = pygame.mouse.get_pos()
+                        if x > 350 and x < 450 and y > 350 and y < 400:
+                            play_again = 'yes'
+                        elif x > 550 and x < 650 and y > 350 and y < 400:
+                            play_again = 'no'
+            if play_again != 'yes':
+                break
 
     def get_player_action(self):
         while True:
@@ -204,11 +283,11 @@ class BlackjackGame:
                         return 'hit'
                     elif event.key == pygame.K_d:
                         return 'double'
-                    elif event.key == pygame.K_s:
+                    elif event.key == pygame.K_p:
                         return 'split'
                     elif event.key == pygame.K_i:
                         return 'insurance'
                     elif event.key == pygame.K_u:
                         return 'surrender'
-                    elif event.key == pygame.K_t:
+                    elif event.key == pygame.K_s:
                         return 'stand'

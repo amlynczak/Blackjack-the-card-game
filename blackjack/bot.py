@@ -16,7 +16,7 @@ class Bot(Player):
         dealer_card_num = rank_to_num[dealer_card_rank]
         action = 'U' #unknown
 
-        if self.hands[self.hand_id].cards[0].rank ==  self.hands[self.hand_id].cards[1].rank:
+        if self.hands[self.hand_id].cards[0].rank ==  self.hands[self.hand_id].cards[1].rank and len(self.hands[self.hand_id].cards) == 2:
             file_path = os.path.join(os.path.dirname(__file__), "../assets/basic_strategy/pairs")
             with open(file_path, 'r') as file:
                 for line in file:
@@ -26,7 +26,7 @@ class Bot(Player):
                             break
                         else:
                             action = 'U'
-        elif 'A' in [card.rank for card in self.hands[self.hand_id].cards]:
+        elif 'A' in [card.rank for card in self.hands[self.hand_id].cards] and len(self.hands[self.hand_id].cards) == 2:
             non_ace_card = [card for card in self.hands[self.hand_id].cards if card.rank != 'A'][0]
             file_path = os.path.join(os.path.dirname(__file__), "../assets/basic_strategy/pairs_with_aces")
             with open(file_path, 'r') as file:

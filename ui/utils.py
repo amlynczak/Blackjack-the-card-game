@@ -38,8 +38,6 @@ def display_game_state(screen, main_player, dealer, bot_players, card_images, ca
             x = center_x + int(radius * math.cos(math.radians(angle)))
             y = center_y + int(radius * math.sin(math.radians(angle)))
             for hand in bot.hands:
-                if hand.isBlackjack:
-                    print(f"{bot} Blackjack!")
                 display_hand_bot(hand, x, y, screen, card_images_bots, font)
         pygame.display.flip()
 

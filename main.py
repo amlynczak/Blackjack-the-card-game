@@ -20,7 +20,7 @@ def main():
     #    if play_again != 'yes':
     #        break
 
-    game = BlackjackGame(number_of_players=7)
+    game = BlackjackGame(number_of_players=7, number_of_decks=8)
     game.play()
 
 if __name__ == "__main__":

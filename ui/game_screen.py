@@ -40,14 +40,17 @@ for suit in ['spades', 'hearts', 'diamonds', 'clubs']:
         card_images_bots[f"{face}_of_{suit}"] = pygame.transform.scale(pygame.image.load(f"assets/images/cards/{face}_of_{suit}.png"), (40, 60))
 
 class BlackjackGame:
-    def __init__(self, number_of_decks = 1, number_of_players = 4, standard_bet = 20) -> None:
+    def __init__(self, number_of_decks = 1, number_of_players = 1, standard_bet = 20) -> None:
         self.deck = Deck(number_of_decks)
         self.standard_bet = standard_bet
         self.main_player = Player(name="Player", money = 200)
         self.bot_players = [Bot(name=f"Bot {i+1}", money = 60) for i in range(number_of_players - 1)]
         self.dealer = Dealer()
         self.font = pygame.font.Font(None, 36)
-        self.players_turn = random.randint(1, number_of_players)
+        if number_of_players <=4 :
+            self.players_turn = number_of_players - 1
+        else:
+            self.players_turn = 3
 
     def start_new_round(self):
         if self.main_player.can_play(self.standard_bet):
@@ -81,13 +84,12 @@ class BlackjackGame:
 
         if self.main_player.get_hand_value() == 21:
             print("♣♦♥♠ Blackjack! ♣♦♥♠")
-            time.sleep(5)
             self.main_player.hands[self.main_player.hand_id].isBlackjack = True
             print(f"{self.main_player} Blackjack!")
         else:
             print(f"{self.main_player}")
 
-        for bot in self.bot_players:
+        for bot in self.bot_players[:]:
             if bot.get_hand_value() == 21:
                 bot.hands[bot.hand_id].isBlackjack = True
                 print(f"{bot} Blackjack!")
@@ -153,9 +155,6 @@ class BlackjackGame:
     def play_round(self):
         """Plays a game of blackjack"""
         self.start_new_round()
-
-        print(self.bot_players[:self.players_turn])
-        print(self.bot_players[(self.players_turn+1):])
         
         for bot in self.bot_players[:self.players_turn]:
             while bot.hand_id < len(bot.hands):
@@ -209,7 +208,7 @@ class BlackjackGame:
             self.main_player.hand_id += 1
 
         # Bot players turn
-        for bot in self.bot_players[(self.players_turn+1):]:
+        for bot in self.bot_players[self.players_turn:]:
             while bot.hand_id < len(bot.hands):
                 while True and bot.hands[bot.hand_id].isBlackjack == False:
                     time.sleep(2)

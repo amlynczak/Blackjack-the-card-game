@@ -6,7 +6,7 @@ class Card:
 
     def __str__(self):
         '''Returns a string representation of the card'''
-        return f"{self.rank}{self.suit}"
+        return f"{self.rank}_of_{self.suit}"
     
     def value(self):
         '''Returns the value of the card'''

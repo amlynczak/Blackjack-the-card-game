@@ -1,4 +1,8 @@
+import time
+
 from .player import Player
+
+from ui.utils import display_game_state
 
 class Dealer():
     def __init__(self):
@@ -25,13 +29,15 @@ class Dealer():
 
         return value
     
-    def dealers_turn(self, deck):
+    def dealers_turn(self, deck, screen, main_player, bot_players, card_images, card_images_bots, font):
         """Starts the dealer's turn, dealing cards until the value is at"""
         print(f"Dealer's cards: {self}")
         while self.should_hit():
             card = deck.deal_card()
             self.add_card(card)
             print(f"Dealer hits: {card}")
+            time.sleep(3)
+            display_game_state(screen, main_player, self, bot_players, card_images, card_images_bots, font, True)
         print(f"Dealer's hand: {self}")
     
     def reset_hand(self):

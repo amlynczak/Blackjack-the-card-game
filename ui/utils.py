@@ -20,7 +20,7 @@ def display_game_state(screen, main_player, dealer, bot_players, card_images, ca
         screen.fill(GREEN)
         for i, hand in enumerate(main_player.hands):
             display_hand(hand, screen.get_width()//2 - 50 + i * 30, screen.get_height() - 200, screen, card_images, font)
-        shift = 50 * (dealer.hand.__len__() - 1)
+        shift = 30 + 50 * (dealer.hand.__len__() - 1)
         display_hand_dealer(dealer, screen.get_width()//2 - shift , 20, screen, card_images, font, dealer_show_all)
 
         num_of_bots = len(bot_players)

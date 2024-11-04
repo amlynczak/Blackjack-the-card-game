@@ -20,25 +20,31 @@ def display_game_state(screen, main_player, dealer, bot_players, card_images, ca
         screen.fill(GREEN)
         for i, hand in enumerate(main_player.hands):
             display_hand(hand, screen.get_width()//2 - 50 + i * 30, screen.get_height() - 200, screen, card_images, font)
-        display_hand_dealer(dealer, screen.get_width()//2 - 50 , 50, screen, card_images, font, dealer_show_all)
+        shift = 50 * (dealer.hand.__len__() - 1)
+        display_hand_dealer(dealer, screen.get_width()//2 - shift , 20, screen, card_images, font, dealer_show_all)
 
         num_of_bots = len(bot_players)
         angle_step = 180 // 7
         radius = 300
         center_x_num_less_4 = screen.get_width() // 2 + 100
         center_x_num_more_4 = screen.get_width() // 2 - 100
-        center_y = 100
+        center_y = 80
 
         for i, bot in enumerate(bot_players):
             angle = (i + 1) * angle_step
             if i < 3:
                 center_x = center_x_num_less_4
+                r_side = True
             else:
                 center_x = center_x_num_more_4
+                r_side = False
             x = center_x + int(radius * math.cos(math.radians(angle)))
             y = center_y + int(radius * math.sin(math.radians(angle)))
             for hand in bot.hands:
-                display_hand_bot(hand, x, y, screen, card_images_bots, font)
+                if r_side:
+                    display_hand_bot(hand, x+100, y, screen, card_images_bots, font, r_side)
+                else:
+                    display_hand_bot(hand, x - 100, y, screen, card_images_bots, font, r_side)
         pygame.display.flip()
 
 def display_hand(hand, x, y, screen, card_images, font):
@@ -50,14 +56,17 @@ def display_hand(hand, x, y, screen, card_images, font):
         text = font.render("Blackjack!", True, WHITE)
         screen.blit(text, (x + 200, y + 100))
 
-def display_hand_bot(hand, x, y, screen, card_images, font):
+def display_hand_bot(hand, x, y, screen, card_images, font, right_hand_side=True):
     for j, card in enumerate(hand.cards):
-        screen.blit(card_images[str(card)], (x + j * 20, y + j * 20))
+        if right_hand_side:
+            screen.blit(card_images[str(card)], (x - j * 20, y - j * 20))
+        else:
+            screen.blit(card_images[str(card)], (x + j * 20, y - j * 20))
     text = font.render(f"{hand.get_hand_value()}", True, WHITE)
     screen.blit(text, (x, y + 100))
-    if hand.isBlackjack:
-        text = font.render("Blackjack!", True, WHITE)
-        screen.blit(text, (x + 200, y + 100))
+    #if hand.isBlackjack:
+    #   text = font.render("Blackjack!", True, WHITE)
+    #   screen.blit(text, (x + 200, y + 100))
 
 def display_hand_dealer(dealer, x, y, screen, card_images, font, show_all=False):
     for i, card in enumerate(dealer.hand):

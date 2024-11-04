@@ -5,6 +5,7 @@ class Hand:
         self.name = hand_name
         self.bet = bet
         self.isBlackjack = False
+        self.has_doubled_down = False
 
     def add_card(self, card):
         """Adds a card to the hand."""
@@ -40,6 +41,7 @@ class Hand:
         '''Player doubles down'''
         self.bet *= 2
         self.hit(card)
+        self.has_doubled_down = True
         return False
     
     def __str__(self):

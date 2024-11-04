@@ -9,7 +9,7 @@ class Player:
         self.money = money
         self.hand_id = 0
         self.insurance_bet = 0
-        self.isInsured = False
+        self.is_insured = False
         self.has_surrenderred = False
 
     def add_card(self, card, hand_id = 0):
@@ -30,7 +30,7 @@ class Player:
         self.money -= standard_bet
         self.hand_id = 0
         self.insurance_bet = 0
-        self.isInsured = False
+        self.is_insured = False
         self.has_surrenderred = False
 
     def hit(self, card, hand_id = 0):
@@ -79,14 +79,14 @@ class Player:
 
     def can_insurance(self, dealer_hand):
         '''Checks if the player can take insurance'''
-        return dealer_hand[0].rank == 'A' and self.isInsured == False and self.money >= self.hands[self.hand_id].bet / 2
+        return dealer_hand[0].rank == 'A' and self.is_insured == False and self.money >= self.hands[self.hand_id].bet / 2
 
     def insurance(self, dealer_hand):
         '''Player takes insurance'''
         if self.can_insurance(dealer_hand):
             self.insurance_bet = self.hands[self.hand_id].bet / 2
             self.money -= self.insurance_bet
-            self.isInsured = True
+            self.is_insured = True
     
     def can_surrender(self):
         '''Checks if the player can surrender'''

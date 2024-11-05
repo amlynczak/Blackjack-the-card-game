@@ -13,7 +13,7 @@ from ui.utils import draw_text, draw_button, display_game_state
 
 pygame.init()
 
-SCREEEN_WIDTH = 1000
+SCREEEN_WIDTH = 1200
 SCREEN_HEIGHT = 700
 WHITE = (255, 255, 255)
 GREEN = (0, 128, 0)
@@ -45,10 +45,7 @@ class BlackjackGame:
         self.bot_players = [Bot(name=f"Bot {i+1}", money = 60) for i in range(number_of_players - 1)]
         self.dealer = Dealer()
         self.font = pygame.font.Font(None, 36)
-        if number_of_players <=4 :
-            self.players_turn = number_of_players - 1
-        else:
-            self.players_turn = 3
+        self.players_turn = len(self.bot_players)//2
 
     def start_new_round(self):
         if self.main_player.can_play(self.standard_bet):
@@ -57,7 +54,7 @@ class BlackjackGame:
             print("You don't have enough money to play. Game over.")
             exit()
             
-        for bot in self.bot_players:
+        for bot in self.bot_players[:]:
             if bot.can_play(self.standard_bet):
                 bot.reset_hand(self.standard_bet)
             else:
@@ -134,12 +131,12 @@ class BlackjackGame:
                     results.append(f"{hand.name}: Draw!")
                     player.money += hand.bet
 
-            if dealer_value == 21 and len(self.dealer.hand) == 2 and player.isInsured:
-                if player.isInsured:
-                    results.append(f"{player.name}: Insurance won!")
-                    player.money += player.insurance_bet * 2
-                else:
-                    results.append(f"{player.name}: Insurance lost!") 
+            if dealer_value == 21 and len(self.dealer.hand) == 2 and player.is_insured:
+                results.append(f"{player.name}: Insurance won!")
+                player.money += player.insurance_bet * 2
+            elif dealer_value != 21 and len(self.dealer.hand) == 2 and player.is_insured:
+                results.append(f"{player.name}: Insurance lost!")
+            
         self.screen.fill(GREEN)
         draw_text("Results", self.font, WHITE, self.screen, 450, 50)
         y = 100
@@ -157,15 +154,15 @@ class BlackjackGame:
         for bot in self.bot_players[:self.players_turn]:
             while bot.hand_id < len(bot.hands):
                 while True and bot.hands[bot.hand_id].isBlackjack == False:
-                    time.sleep(2)
+                    time.sleep(1)
                     action = bot.decide_action(self.dealer.hand)
                     if action == 'hit':
                         print(f"{bot.name} hits")
-                        if not bot.hit(self.deck.deal_card()):
+                        if not bot.hit(self.deck.deal_card(), bot.hand_id):
                             break
                     elif action == 'double':
                         print(f"{bot.name} doubles down")
-                        if not bot.double_down(self.deck.deal_card()):
+                        if not bot.double_down(self.deck.deal_card(), bot.hand_id):
                             break
                     elif action == 'split':
                         if bot.can_split():
@@ -214,11 +211,11 @@ class BlackjackGame:
                     print(f"{bot.name} choose to: {action}")
                     if action == 'hit':
                         print(f"{bot.name} hits")
-                        if not bot.hit(self.deck.deal_card()):
+                        if not bot.hit(self.deck.deal_card(), bot.hand_id):
                             break
                     elif action == 'double':
                         print(f"{bot.name} doubles down")
-                        if not bot.double_down(self.deck.deal_card()):
+                        if not bot.double_down(self.deck.deal_card(), bot.hand_id):
                             break
                     elif action == 'split':
                         if bot.can_split():
@@ -239,10 +236,11 @@ class BlackjackGame:
             print(result)
 
         print(f"AGH-coins balance for {self.main_player.name}: {self.main_player.money}")
-        for bot in self.bot_players:
+        for bot in self.bot_players[:]:
             if bot.money == 0:
                 print(f"{bot.name} is out of money.")
                 self.bot_players.remove(bot)
+                self.players_turn = len(self.bot_players)//2
             else:
                 print(f"AGH-coins balance for {bot.name}: {bot.money}")  
 

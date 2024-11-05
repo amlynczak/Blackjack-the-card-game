@@ -5,6 +5,7 @@ class Hand:
         self.name = hand_name
         self.bet = bet
         self.isBlackjack = False
+        self.has_doubled_down = False
 
     def add_card(self, card):
         """Adds a card to the hand."""
@@ -40,9 +41,10 @@ class Hand:
         '''Player doubles down'''
         self.bet *= 2
         self.hit(card)
+        self.has_doubled_down = True
         return False
     
     def __str__(self):
         '''Returns a string representation of the hand'''
         hand_str = ', '.join(str(card) for card in self.cards)
-        return f"{hand_str} (Points: {self.get_hand_value()})"
+        return f"{hand_str}:({self.get_hand_value()})"

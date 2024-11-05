@@ -9,7 +9,7 @@ class Bot(Player):
 
     def decide_action(self, dealer_hand):
         '''Decides the action to take based on the dealer's hand'''
-        hand_value = self.get_hand_value()
+        hand_value = self.get_hand_value(self.hand_id)
         rank_to_num = {'2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '10': 9, 'J': 10, 'Q': 11, 'K': 12, 'A': 13}
         
         dealer_card_rank = dealer_hand[0].rank

@@ -94,8 +94,8 @@ class BlackjackGame:
                     results.append(f"{hand.name}: Draw!")
                     player.money += hand.bet
 
-            if dealer_value == 21 and len(self.dealer.hand) == 2 and player.isInsured:
-                if player.isInsured:
+            if dealer_value == 21 and len(self.dealer.hand) == 2 and player.is_insured:
+                if player.is_insured:
                     results.append(f"{player.name}: Insurance won!")
                     player.money += player.insurance_bet * 2
                 else:

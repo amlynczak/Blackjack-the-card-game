@@ -5,7 +5,7 @@ class Player:
     def __init__(self, name, money = 1000):
         '''Initializes the player with a name, hand, and money'''
         self.name = name
-        self.hands = [Hand(name + "'s hand", bet = 0)]
+        self.hands = [Hand(name, bet = 0)]
         self.money = money
         self.hand_id = 0
         self.insurance_bet = 0
@@ -59,9 +59,9 @@ class Player:
             self.money += original_hand.bet
 
             # Create two new hands
-            new_hand1 = Hand(original_hand.name + " - 1", original_hand.bet)
+            new_hand1 = Hand(original_hand.name + "-1", original_hand.bet)
             self.money -= original_hand.bet
-            new_hand2 = Hand(original_hand.name + " - 2", original_hand.bet)
+            new_hand2 = Hand(original_hand.name + "-2", original_hand.bet)
             self.money -= original_hand.bet
 
             # Add one card from the original hand to each new hand

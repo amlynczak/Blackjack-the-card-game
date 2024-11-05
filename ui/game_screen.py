@@ -54,7 +54,7 @@ class BlackjackGame:
             print("You don't have enough money to play. Game over.")
             exit()
             
-        for bot in self.bot_players:
+        for bot in self.bot_players[:]:
             if bot.can_play(self.standard_bet):
                 bot.reset_hand(self.standard_bet)
             else:
@@ -236,7 +236,7 @@ class BlackjackGame:
             print(result)
 
         print(f"AGH-coins balance for {self.main_player.name}: {self.main_player.money}")
-        for bot in self.bot_players:
+        for bot in self.bot_players[:]:
             if bot.money == 0:
                 print(f"{bot.name} is out of money.")
                 self.bot_players.remove(bot)

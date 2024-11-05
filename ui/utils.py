@@ -15,11 +15,19 @@ def draw_button(text, font, color, surface, x, y, width, height):
     pygame.draw.rect(surface, color, (x, y, width, height))
     draw_text(text, font, (0, 0, 0), surface, x + 10, y + 10)
 
+def draw_background(screen):
+    screen.fill(GREEN)
+    pygame.display.flip()
+
 
 def display_game_state(screen, main_player, dealer, bot_players, card_images, card_images_bots, font, dealer_show_all=False):
         screen.fill(GREEN)
+        players_step = screen.get_width() // (len(main_player.hands) + 1)
         for i, hand in enumerate(main_player.hands):
-            display_hand(hand, screen.get_width()//2 - 50 + i * 30, screen.get_height() - 200, screen, card_images, font)
+            shift = 30 + 15 * (hand.cards.__len__() - 1)
+            x = (i + 1) * players_step
+            y = screen.get_height() - 200
+            display_hand(hand, x - shift, y, screen, card_images, font)
         shift = 30 + 50 * (dealer.hand.__len__() - 1)
         display_hand_dealer(dealer, screen.get_width()//2 - shift , 20, screen, card_images, font, dealer_show_all)
 
@@ -32,7 +40,7 @@ def display_game_state(screen, main_player, dealer, bot_players, card_images, ca
             right_side_hands.extend(bot.hands)
         if len(right_side_hands) != 0:
             angle_step_right = 90 // len(right_side_hands)
-            center_x_right_side = screen.get_width() // 2 + 200
+            center_x_right_side = screen.get_width() // 2 + 260
             for i, hand in enumerate(right_side_hands):
                 angle = (i + 1) * angle_step_right
                 x = center_x_right_side + int(radius * math.cos(math.radians(angle)))
@@ -45,7 +53,7 @@ def display_game_state(screen, main_player, dealer, bot_players, card_images, ca
             left_side_hands.extend(bot.hands)
         if len(left_side_hands) != 0:
             angle_step_left = 90 // len(left_side_hands)
-            center_x_left_side = screen.get_width() // 2 - 200
+            center_x_left_side = screen.get_width() // 2 - 300
             for i, hand in enumerate(left_side_hands):
                 angle = i * angle_step_left + 90
                 x = center_x_left_side + int(radius * math.cos(math.radians(angle)))
@@ -56,7 +64,11 @@ def display_game_state(screen, main_player, dealer, bot_players, card_images, ca
 
 def display_hand(hand, x, y, screen, card_images, font):
     for j, card in enumerate(hand.cards):
-        screen.blit(card_images[str(card)], (x + j * 100, y))
+        if hand.has_doubled_down and j == 2:
+            card_img = pygame.transform.rotate(card_images[str(card)], 90)
+        else:
+            card_img = card_images[str(card)]
+        screen.blit(card_img, (x + j * 30, y - j * 10))
     text = font.render(f"{hand.name}: {hand.get_hand_value()}", True, WHITE)
     screen.blit(text, (x, y + 100))
     if hand.isBlackjack:
@@ -64,6 +76,7 @@ def display_hand(hand, x, y, screen, card_images, font):
         screen.blit(text, (x + 200, y + 100))
 
 def display_hand_bot(hand, x, y, screen, card_images, font, right_hand_side=True):
+    font = pygame.font.Font(None, 18)
     for j, card in enumerate(hand.cards):
         card_img = card_images[str(card)]
         if hand.has_doubled_down and j == 2:
@@ -73,8 +86,8 @@ def display_hand_bot(hand, x, y, screen, card_images, font, right_hand_side=True
             screen.blit(card_img, (x - j * 20, y - j * 20))
         else:
             screen.blit(card_img, (x + j * 20, y - j * 20))
-    text = font.render(f"{hand.get_hand_value()}", True, WHITE)
-    screen.blit(text, (x, y + 100))
+    text = font.render(f"{hand.name}:{hand.get_hand_value()}", True, WHITE)
+    screen.blit(text, (x, y + 65))
     #if hand.isBlackjack:
     #   text = font.render("Blackjack!", True, WHITE)
     #   screen.blit(text, (x + 200, y + 100))

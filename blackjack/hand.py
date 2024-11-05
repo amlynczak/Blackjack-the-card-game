@@ -47,4 +47,4 @@ class Hand:
     def __str__(self):
         '''Returns a string representation of the hand'''
         hand_str = ', '.join(str(card) for card in self.cards)
-        return f"{hand_str} (Points: {self.get_hand_value()})"
+        return f"{hand_str}:({self.get_hand_value()})"

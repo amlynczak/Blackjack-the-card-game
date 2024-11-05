@@ -26,7 +26,7 @@ class Player:
     def reset_hand(self, standard_bet):
         """Clears the player's hand for a new round."""
         self.hands.clear()
-        self.hands = [Hand(self.name + "'s hand", standard_bet)]
+        self.hands = [Hand(self.name, standard_bet)]
         self.money -= standard_bet
         self.hand_id = 0
         self.insurance_bet = 0

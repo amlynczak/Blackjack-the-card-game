@@ -86,11 +86,8 @@ def display_hand_bot(hand, x, y, screen, card_images, font, right_hand_side=True
             screen.blit(card_img, (x - j * 20, y - j * 20))
         else:
             screen.blit(card_img, (x + j * 20, y - j * 20))
-    text = font.render(f"{hand.name}:{hand.get_hand_value()}", True, WHITE)
+    text = font.render(f"{hand.name}({hand.get_hand_value()})", True, WHITE)
     screen.blit(text, (x, y + 65))
-    #if hand.isBlackjack:
-    #   text = font.render("Blackjack!", True, WHITE)
-    #   screen.blit(text, (x + 200, y + 100))
 
 def display_hand_dealer(dealer, x, y, screen, card_images, font, show_all=False):
     for i, card in enumerate(dealer.hand):
@@ -104,5 +101,5 @@ def display_hand_dealer(dealer, x, y, screen, card_images, font, show_all=False)
     if not show_all:
         text = font.render(f"Dealer: {dealer.hand[0]} and [hidden]", True, WHITE)
     else:
-        text = font.render(f"Dealer: (Points: {dealer.get_hand_value()})", True, WHITE)
+        text = font.render(f"Dealer - points: {dealer.get_hand_value()})", True, WHITE)
     screen.blit(text, (x, y + 100))

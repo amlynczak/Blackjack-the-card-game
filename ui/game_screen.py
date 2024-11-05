@@ -66,19 +66,16 @@ class BlackjackGame:
 
         self.dealer.reset_hand()
 
-        for bot in self.bot_players[:self.players_turn]:
-            bot.add_card(self.deck.deal_card())
-            bot.add_card(self.deck.deal_card())
+        for i in range(2):
+            for bot in self.bot_players[:self.players_turn]:
+                bot.add_card(self.deck.deal_card())
 
-        self.main_player.add_card(self.deck.deal_card())
-        self.main_player.add_card(self.deck.deal_card())
+            self.main_player.add_card(self.deck.deal_card())
 
-        for bot in self.bot_players[self.players_turn: len(self.bot_players)]:
-            bot.add_card(self.deck.deal_card())
-            bot.add_card(self.deck.deal_card())
+            for bot in self.bot_players[self.players_turn: len(self.bot_players)]:
+                bot.add_card(self.deck.deal_card())
         
-        self.dealer.add_card(self.deck.deal_card())
-        self.dealer.add_card(self.deck.deal_card())
+            self.dealer.add_card(self.deck.deal_card())
 
         if self.main_player.get_hand_value() == 21:
             print("♣♦♥♠ Blackjack! ♣♦♥♠")

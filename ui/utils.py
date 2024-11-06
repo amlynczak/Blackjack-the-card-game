@@ -81,6 +81,18 @@ def display_game_state(screen, main_player, dealer, bot_players, card_images, ca
                 y = center_y + int(radius * math.sin(math.radians(angle)))
                 display_hand_bot(hand, x, y, screen, card_images_bots, font, False)
         
+        if main_player.can_hit(main_player.hand_id):
+            draw_button("Hit", font, WHITE, screen, 350, 500, 100, 50)
+        if main_player.can_double_down(main_player.hand_id):
+            draw_button("Double", font, WHITE, screen, 500, 500, 100, 50)
+        if main_player.can_split():
+            draw_button("Split", font, WHITE, screen, 650, 500, 100, 50)
+        if main_player.can_insurance(dealer.hand):
+            draw_button("Insurance", font, WHITE, screen, 800, 500, 100, 50)
+        if main_player.can_surrender():
+            draw_button("Surrender", font, WHITE, screen, 950, 500, 100, 50)
+        if main_player.can_stand():
+            draw_button("Stand", font, WHITE, screen, 1100, 500, 100, 50)
         pygame.display.flip()
 
 def display_hand(hand, x, y, screen, card_images, font):

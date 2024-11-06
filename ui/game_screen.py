@@ -283,3 +283,17 @@ class BlackjackGame:
                         return 'surrender'
                     elif event.key == pygame.K_s:
                         return 'stand'
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    x, y = pygame.mouse.get_pos()
+                    if x > 350 and x < 450 and y > 500 and y < 550:
+                        return 'hit'
+                    elif x > 500 and x < 600 and y > 500 and y < 550:
+                        return 'double'
+                    elif x > 650 and x < 750 and y > 500 and y < 550:
+                        return 'split'
+                    elif x > 800 and x < 900 and y > 500 and y < 550:
+                        return 'insurance'
+                    elif x > 950 and x < 1050 and y > 500 and y < 550:
+                        return 'surrender'
+                    elif x > 1100 and x < 1200 and y > 500 and y < 550:
+                        return 'stand'

@@ -4,6 +4,8 @@ import math
 
 GREEN = (0, 128, 0)
 WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+YELLOW = (255, 255, 0)
 
 def draw_text(text, font, color, surface, x, y):
     textobj = font.render(text, True, color)
@@ -11,17 +13,36 @@ def draw_text(text, font, color, surface, x, y):
     textrect.topleft = (x, y)
     surface.blit(textobj, textrect)
 
+def draw_text_rotated(text, font, color, surface, x, y, angle):
+    text_surface = font.render(text, True, color)
+    rotated_text = pygame.transform.rotate(text_surface, angle)
+    rect = rotated_text.get_rect()
+    surface.blit(rotated_text, (x - rect.width//2, y - rect.height//2))
+
 def draw_button(text, font, color, surface, x, y, width, height):
     pygame.draw.rect(surface, color, (x, y, width, height))
     draw_text(text, font, (0, 0, 0), surface, x + 10, y + 10)
 
 def draw_background(screen):
     screen.fill(GREEN)
+    #circle_center = (screen.get_width()//2, 0)
+    #radius = 200
+    #texts = ["BLACKJACK PAY 3 TO 2", "DEALER MUST HIT ON SOFT 17", "INSURANCE PAYS 2 TO 1"]
+    #pygame.draw.circle(screen, WHITE, circle_center, radius, 5)
+    #start_angle = 180
+    #angle_step = 360 // len(texts)
+    #for i, text in enumerate(texts):
+    #    angle = start_angle + i * angle_step
+    #    x = circle_center[0] + int(radius * math.cos(math.radians(angle)))
+    #    y = circle_center[1] + int(radius * math.sin(math.radians(angle)))
+    #    text_angle = -angle
+    #    draw_text_rotated(text, pygame.font.Font(None, 36), WHITE, screen, x, y, angle)
     pygame.display.flip()
 
 
 def display_game_state(screen, main_player, dealer, bot_players, card_images, card_images_bots, font, dealer_show_all=False):
-        screen.fill(GREEN)
+        draw_background(screen)
+        
         players_step = screen.get_width() // (len(main_player.hands) + 1)
         for i, hand in enumerate(main_player.hands):
             shift = 30 + 15 * (hand.cards.__len__() - 1)

@@ -34,7 +34,7 @@ class Player:
         self.has_surrenderred = False
 
     def can_stand(self):
-        return True
+        return self.get_hand_value() <= 21
 
     def can_hit(self, hand_id = 0):
         return self.get_hand_value(hand_id) < 21

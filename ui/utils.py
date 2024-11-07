@@ -23,6 +23,10 @@ def draw_button(text, font, color, surface, x, y, width, height):
     pygame.draw.rect(surface, color, (x, y, width, height))
     draw_text(text, font, (0, 0, 0), surface, x + 10, y + 10)
 
+def draw_button_unavailable(text, font, color, surface, x, y, width, height):
+    pygame.draw.rect(surface, color, (x, y, width, height))
+    draw_text(text, font, (0, 0, 0), surface, x + 10, y + 10)
+
 def draw_background(screen):
     screen.fill(GREEN)
     #circle_center = (screen.get_width()//2, 0)
@@ -40,7 +44,7 @@ def draw_background(screen):
     pygame.display.flip()
 
 
-def display_game_state(screen, main_player, dealer, bot_players, card_images, card_images_bots, font, dealer_show_all=False):
+def display_game_state(screen, main_player, dealer, bot_players, card_images, card_images_bots, font, dealer_show_all=False, players_turn=False):
         draw_background(screen)
         
         players_step = screen.get_width() // (len(main_player.hands) + 1)
@@ -81,18 +85,19 @@ def display_game_state(screen, main_player, dealer, bot_players, card_images, ca
                 y = center_y + int(radius * math.sin(math.radians(angle)))
                 display_hand_bot(hand, x, y, screen, card_images_bots, font, False)
         
-        if main_player.can_hit(main_player.hand_id):
-            draw_button("Hit", font, WHITE, screen, 350, 500, 100, 50)
-        if main_player.can_double_down(main_player.hand_id):
-            draw_button("Double", font, WHITE, screen, 500, 500, 100, 50)
-        if main_player.can_split():
-            draw_button("Split", font, WHITE, screen, 650, 500, 100, 50)
-        if main_player.can_insurance(dealer.hand):
-            draw_button("Insurance", font, WHITE, screen, 800, 500, 100, 50)
-        if main_player.can_surrender():
-            draw_button("Surrender", font, WHITE, screen, 950, 500, 100, 50)
-        if main_player.can_stand():
-            draw_button("Stand", font, WHITE, screen, 1100, 500, 100, 50)
+        if players_turn:
+            if main_player.can_hit(main_player.hand_id):
+                draw_button("Hit", font, WHITE, screen, 20, screen.get_height()-120, 100, 50)
+            if main_player.can_stand():
+                draw_button("Stand", font, WHITE, screen, 20, screen.get_height()-60, 100, 50)
+            if main_player.can_double_down(main_player.hand_id):
+                draw_button("Double", font, WHITE, screen, 130, screen.get_height()-120, 100, 50)
+            if main_player.can_split():
+                draw_button("Split", font, WHITE, screen, 130, screen.get_height()-60, 100, 50)
+            if main_player.can_insurance(dealer.hand):
+                draw_button("Insurance", font, WHITE, screen, 240, screen.get_height()-120, 100, 50)
+            if main_player.can_surrender():
+                draw_button("Surrender", font, WHITE, screen, 240, screen.get_height()-60, 100, 50)
         pygame.display.flip()
 
 def display_hand(hand, x, y, screen, card_images, font):

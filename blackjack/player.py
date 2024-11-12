@@ -33,6 +33,12 @@ class Player:
         self.is_insured = False
         self.has_surrenderred = False
 
+    def can_stand(self):
+        return self.get_hand_value() <= 21
+
+    def can_hit(self, hand_id = 0):
+        return self.get_hand_value(hand_id) < 21
+
     def hit(self, card, hand_id = 0):
         """Player takes a card from the deck."""
         return self.hands[hand_id].hit(card)

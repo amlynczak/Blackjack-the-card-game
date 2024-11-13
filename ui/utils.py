@@ -139,5 +139,5 @@ def display_hand_dealer(dealer, x, y, screen, card_images, font, show_all=False)
     if not show_all:
         text = font.render(f"Dealer: {dealer.hand[0]} and [hidden]", True, WHITE)
     else:
-        text = font.render(f"Dealer - points: {dealer.get_hand_value()})", True, WHITE)
+        text = font.render(f"Dealer: {dealer.get_hand_value()}", True, WHITE)
     screen.blit(text, (x, y + 100))

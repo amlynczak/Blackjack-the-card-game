@@ -1,6 +1,6 @@
 from card_counter.counter import Counter
 
-class HighLowCounter(Counter):
+class Red7Counter(Counter):
     def __init__(self):
         super().__init__()
 

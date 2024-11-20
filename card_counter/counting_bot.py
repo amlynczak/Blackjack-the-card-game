@@ -1,13 +1,13 @@
 from blackjack.player import Player
-from card_counter.methods.high_low import HighLowCounter
+from card_counter.methods import TenCountCounter, HalvesCounter, HighLowCounter, HighOptICounter, HighOptIICounter
+from card_counter.methods import KOCounter, OmegaIICounter, Red7Counter, ZenCountCounter
 import os
 
 class CountingBot(Player):
-    def __init__(self, method, name="Counting Bot", money = 1000):
+    def __init__(self, name="Counting Bot", money = 1000, counter = TenCountCounter()):
         '''Initializes the bot with a name, hand, and money'''
         super().__init__(name, money)
-        self.method = method
-        self.count = 0
+        self.counter = counter
 
     def decide_action(self, dealers_hand):
         '''Decides whether to hit or stand based on the count'''
@@ -19,4 +19,4 @@ class CountingBot(Player):
         
     def update_count(self, card):
         '''Updates the count based on the card'''
-        self.method.update_count(card)
+        self.counter.update_count(card)

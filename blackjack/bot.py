@@ -42,6 +42,11 @@ class Bot(Player):
                         action = line.split()[dealer_card_num]
                         break
 
+        return action
+            
+    def decide_final_action(self, dealer_hand):
+        action  = self.decide_action(dealer_hand)
+
         if action == 'H':
             return 'hit'
         elif action == 'D':
@@ -51,7 +56,7 @@ class Bot(Player):
         elif action == 'S':
             return 'stand'
         else:
-            if hand_value < 17:
+            if self.get_hand_value() < 17:
                 return 'hit'
             else:
                 return 'stand'

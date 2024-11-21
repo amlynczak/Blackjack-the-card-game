@@ -153,7 +153,7 @@ class BlackjackGame:
                 while True and bot.hands[bot.hand_id].isBlackjack == False:
                     display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, card_images, card_images_bots, self.font)
                     time.sleep(1)
-                    action = bot.decide_action(self.dealer.hand)
+                    action = bot.decide_final_action(self.dealer.hand)
                     if action == 'hit':
                         print(f"{bot.name} hits")
                         if not bot.hit(self.deck.deal_card(), bot.hand_id):
@@ -206,7 +206,7 @@ class BlackjackGame:
                 while True and bot.hands[bot.hand_id].isBlackjack == False:
                     display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, card_images, card_images_bots, self.font)
                     time.sleep(1)
-                    action = bot.decide_action(self.dealer.hand)
+                    action = bot.decide_final_action(self.dealer.hand)
                     print(f"{bot.name} choose to: {action}")
                     if action == 'hit':
                         print(f"{bot.name} hits")

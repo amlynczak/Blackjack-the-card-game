@@ -25,13 +25,59 @@ class CountingBot(Bot):
                 for line in file:
                     if line.startswith(self.hands[self.hand_id].cards[0].rank):
                         action_tmp = line.split()[dealer_card_num]
-                        if action == action_tmp:
-                            break
-                        else:
-                            break
+        elif 'A' in [card.rank for card in self.hands[self.hand_id].cards] and len(self.hands[self.hand_id].cards) == 2:
+            file_path = os.path.join(os.path.dirname(__file__), "../assets/counting_cards/pairs_with_aces")
+            with open(file_path, 'r') as file:
+                for line in file:
+                    if line.startswith(self.hands[self.hand_id].cards[0].rank):
+                        action_tmp = line.split()[dealer_card_num]
+        else:
+            file_path = os.path.join(os.path.dirname(__file__), "../assets/counting_cards/points")
+            with open(file_path, 'r') as file:
+                for line in file:
+                    if line.startswith(str(hand_value)):
+                        action_tmp = line.split()[dealer_card_num]
+        
+        
+        if action != action_tmp:
+            if action_tmp[0] == '+':
+                true_count_threshold = int(action_tmp[1:])
+                true_count = self.counter.get_count()
+                if true_count >= true_count_threshold:
+                    action = self.convert_action(action, True)
+            elif action_tmp[0] == '-':
+                true_count_threshold = int(action_tmp[1:])
+                true_count = self.counter.get_count()
+                if true_count <= ((-1) * true_count_threshold):
+                    action = self.convert_action(action, False)
+                
 
-        #TODO: Implement the rest of the cases
+        if action == 'H':
+            return 'hit'
+        elif action == 'S':
+            return 'stand'
+        elif action == 'D':
+            return 'double'
+        elif action == 'P':
+            return 'split'
+        elif action == 'I':
+            return 'insurance'
+        elif action == 'R':
+            return 'surrender'
 
+    def convert_action(self, action, up = True):
+        if action == 'H' and up:
+            return 'D'
+        elif action == 'H' and not up:
+            return 'S'
+        elif action == 'S' and up:
+            return 'H'
+        elif action == 'D' and not up:
+            return 'H'
+        elif action == 'P' and not up:
+            return 'H'
+        
+        return action #TODO do proper conversion
 
         
     def update_count(self, card):

@@ -1,6 +1,6 @@
 from card_counter.counter import Counter
 
-class KnockOutCounter(Counter):
+class KOCounter(Counter):
     def __init__(self):
         super().__init__()
 

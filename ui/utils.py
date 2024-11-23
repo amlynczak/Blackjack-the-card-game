@@ -66,8 +66,8 @@ def draw_background(screen, first_table=True):
     pygame.display.flip()
 
 
-def display_game_state(screen, main_player, dealer, bot_players, dealer_show_all=False, players_turn=False):
-        draw_background(screen)
+def display_game_state(screen, main_player, dealer, bot_players, first_table = True, dealer_show_all=False, players_turn=False):
+        draw_background(screen, first_table)
         
         players_step = screen.get_width() // (len(main_player.hands) + 1)
         for i, hand in enumerate(main_player.hands):

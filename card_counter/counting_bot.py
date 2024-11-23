@@ -1,6 +1,15 @@
 from blackjack.bot import Bot
-from card_counter.methods import TenCountCounter, HalvesCounter, HighLowCounter, HighOptICounter, HighOptIICounter
-from card_counter.methods import KOCounter, OmegaIICounter, Red7Counter, ZenCountCounter
+from card_counter.methods.halves import HalvesCounter
+from card_counter.methods.high_low import HighLowCounter
+from card_counter.methods.high_optI import HighOptICounter
+from card_counter.methods.high_optII import HighOptIICounter
+from card_counter.methods.ko import KOCounter
+from card_counter.methods.omega import OmegaCounter
+from card_counter.methods.red_seven import Red7Counter
+from card_counter.methods.ten_count import TenCountCounter
+from card_counter.methods.zen_count import ZenCountCounter
+
+
 import os
 
 class CountingBot(Bot):
@@ -18,6 +27,8 @@ class CountingBot(Bot):
         
         dealer_card_rank = dealers_hand[0].rank
         dealer_card_num = rank_to_num[dealer_card_rank]
+
+        action_tmp = 'U' #unknown
 
         if self.hands[self.hand_id].cards[0].rank == self.hands[self.hand_id].cards[1].rank and len(self.hands[self.hand_id].cards) == 2:
             file_path = os.path.join(os.path.dirname(__file__), "../assets/counting_cards/pairs")
@@ -38,7 +49,6 @@ class CountingBot(Bot):
                     if line.startswith(str(hand_value)):
                         action_tmp = line.split()[dealer_card_num]
         
-        
         if action != action_tmp:
             if action_tmp[0] == '+':
                 true_count_threshold = int(action_tmp[1:])
@@ -50,7 +60,6 @@ class CountingBot(Bot):
                 true_count = self.counter.get_count()
                 if true_count <= ((-1) * true_count_threshold):
                     action = self.convert_action(action, False)
-                
 
         if action == 'H':
             return 'hit'

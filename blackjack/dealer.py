@@ -37,7 +37,7 @@ class Dealer():
             self.add_card(card)
             print(f"Dealer hits: {card}")
             time.sleep(3)
-            display_game_state(screen, main_player, self, bot_players, True)
+            display_game_state(screen, main_player, self, bot_players, True, True)
         print(f"Dealer's hand: {self}")
     
     def reset_hand(self):

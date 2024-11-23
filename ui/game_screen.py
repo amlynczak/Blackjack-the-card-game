@@ -10,6 +10,8 @@ from blackjack.player import Player
 from blackjack.dealer import Dealer
 from blackjack.bot import Bot
 
+from card_counter.counting_bot import CountingBot
+
 from ui.utils import draw_text, draw_button, display_game_state
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -24,12 +26,16 @@ BLACK = (0, 0, 0)
 pygame.display.set_caption("Blackjack")        
 
 class BlackjackGame:
-    def __init__(self, number_of_decks = 1, number_of_players = 1, standard_bet = 20):
+    def __init__(self, number_of_decks = 1, number_of_players = 1, first_table = True, standard_bet = 20):
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.deck = Deck(number_of_decks)
+        self.first_table = first_table
         self.standard_bet = standard_bet
         self.main_player = Player(name="Player", money = 200)
-        self.bot_players = [Bot(name=f"Bot {i+1}", money = 60) for i in range(number_of_players - 1)]
+        if first_table:
+            self.bot_players = [Bot(name=f"Bot {i+1}", money = 60) for i in range(number_of_players - 1)]
+        else:
+            self.bot_players = [CountingBot(name=f"Bot {i+1}", money = 100) for i in range(number_of_players - 1)]
         self.dealer = Dealer()
         self.players_turn = len(self.bot_players)//2
 
@@ -76,7 +82,7 @@ class BlackjackGame:
         
         print(f"Dealer: {self.dealer.hand[0]} and one [hidden] card")
 
-        display_game_state(self.screen, self.main_player, self.dealer, self.bot_players)
+        display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table)
 
 
     def check_winner(self):
@@ -133,12 +139,14 @@ class BlackjackGame:
     def play_round(self):
         """Plays a game of blackjack"""
         self.start_new_round()
+        print("STARTING NEW ROUND")
         
         for bot in self.bot_players[:self.players_turn]:
             while bot.hand_id < len(bot.hands):
                 while True and bot.hands[bot.hand_id].isBlackjack == False:
-                    display_game_state(self.screen, self.main_player, self.dealer, self.bot_players)
+                    display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table)
                     time.sleep(1)
+                    print("BOT SHOULD DECIDE")
                     action = bot.decide_final_action(self.dealer.hand)
                     if action == 'hit':
                         print(f"{bot.name} hits")
@@ -155,14 +163,14 @@ class BlackjackGame:
                     elif action == 'stand':
                         print(f"{bot.name} stands")
                         break
-                    display_game_state(self.screen, self.main_player, self.dealer, self.bot_players)
+                    display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table)
                 bot.hand_id += 1
         
         # Main player turn
         print("player's turn")
         while self.main_player.hand_id < len(self.main_player.hands):
             while True and self.main_player.hands[self.main_player.hand_id].isBlackjack == False:
-                display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, players_turn=True)
+                display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table, players_turn=True)
                 action = self.get_player_action()
                 if action == 'hit':
                     if not self.main_player.hit(self.deck.deal_card(), self.main_player.hand_id):
@@ -183,14 +191,14 @@ class BlackjackGame:
                         break
                 elif action == 'stand':
                     break
-            display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, players_turn=True)
+            display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table, players_turn=True)
             self.main_player.hand_id += 1
 
         # Bot players turn
         for bot in self.bot_players[self.players_turn:]:
             while bot.hand_id < len(bot.hands):
                 while True and bot.hands[bot.hand_id].isBlackjack == False:
-                    display_game_state(self.screen, self.main_player, self.dealer, self.bot_players)
+                    display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table)
                     time.sleep(1)
                     action = bot.decide_final_action(self.dealer.hand)
                     print(f"{bot.name} choose to: {action}")
@@ -209,10 +217,10 @@ class BlackjackGame:
                     elif action == 'stand':
                         print(f"{bot.name} stands")
                         break
-                    display_game_state(self.screen, self.main_player, self.dealer, self.bot_players)
+                    display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table)
                 bot.hand_id += 1
 
-        display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, True)
+        display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table, dealer_show_all=True)
         self.dealer.dealers_turn(self.deck, self.screen, self.main_player, self.bot_players)
         time.sleep(5)
 

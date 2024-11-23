@@ -2,33 +2,55 @@ import pygame
 import sys
 import math
 
+pygame.init()
+
 GREEN = (0, 128, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
+DARK_BLUE = (0, 0, 255)
+CARD_WIDTH, CARD_HEIGHT = 60, 90
 
-def draw_text(text, font, color, surface, x, y):
+font = pygame.font.Font(None, 36)
+
+card_images = {}
+card_images_bots = {}
+card_images['back'] = pygame.transform.scale(pygame.image.load("assets/images/cards/back.jpg"), (CARD_WIDTH, CARD_HEIGHT))
+card_images_bots['back'] = pygame.transform.scale(pygame.image.load("assets/images/cards/back.jpg"), (CARD_WIDTH * 0.66, CARD_HEIGHT * 0.66))
+for suit in ['spades', 'hearts', 'diamonds', 'clubs']:
+    for value in range(2, 11):
+        card_images[f"{value}_of_{suit}"] = pygame.transform.scale(pygame.image.load(f"assets/images/cards/{value}_of_{suit}.png"), (CARD_WIDTH, CARD_HEIGHT))
+        card_images_bots[f"{value}_of_{suit}"] = pygame.transform.scale(pygame.image.load(f"assets/images/cards/{value}_of_{suit}.png"), (CARD_WIDTH * 0.66, CARD_HEIGHT * 0.66))
+    for face in ['J', 'Q', 'K', 'A']:
+        card_images[f"{face}_of_{suit}"] = pygame.transform.scale(pygame.image.load(f"assets/images/cards/{face}_of_{suit}.png"), (CARD_WIDTH, CARD_HEIGHT))
+        card_images_bots[f"{face}_of_{suit}"] = pygame.transform.scale(pygame.image.load(f"assets/images/cards/{face}_of_{suit}.png"), (CARD_WIDTH * 0.66, CARD_HEIGHT * 0.66))
+
+
+def draw_text(text, color, surface, x, y):
     textobj = font.render(text, True, color)
     textrect = textobj.get_rect()
     textrect.topleft = (x, y)
     surface.blit(textobj, textrect)
 
-def draw_text_rotated(text, font, color, surface, x, y, angle):
+def draw_text_rotated(text, color, surface, x, y, angle):
     text_surface = font.render(text, True, color)
     rotated_text = pygame.transform.rotate(text_surface, angle)
     rect = rotated_text.get_rect()
     surface.blit(rotated_text, (x - rect.width//2, y - rect.height//2))
 
-def draw_button(text, font, color, surface, x, y, width, height):
+def draw_button(text, color, surface, x, y, width, height):
     pygame.draw.rect(surface, color, (x, y, width, height))
-    draw_text(text, font, (0, 0, 0), surface, x + 10, y + 10)
+    draw_text(text, (0, 0, 0), surface, x + 10, y + 10)
 
-def draw_button_unavailable(text, font, color, surface, x, y, width, height):
+def draw_button_unavailable(text, color, surface, x, y, width, height):
     pygame.draw.rect(surface, color, (x, y, width, height))
-    draw_text(text, font, (0, 0, 0), surface, x + 10, y + 10)
+    draw_text(text, (0, 0, 0), surface, x + 10, y + 10)
 
-def draw_background(screen):
-    screen.fill(GREEN)
+def draw_background(screen, first_table=True):
+    if first_table:
+        screen.fill(GREEN)
+    else:
+        screen.fill(DARK_BLUE)
     #circle_center = (screen.get_width()//2, 0)
     #radius = 200
     #texts = ["BLACKJACK PAY 3 TO 2", "DEALER MUST HIT ON SOFT 17", "INSURANCE PAYS 2 TO 1"]
@@ -44,7 +66,7 @@ def draw_background(screen):
     pygame.display.flip()
 
 
-def display_game_state(screen, main_player, dealer, bot_players, card_images, card_images_bots, font, dealer_show_all=False, players_turn=False):
+def display_game_state(screen, main_player, dealer, bot_players, dealer_show_all=False, players_turn=False):
         draw_background(screen)
         
         players_step = screen.get_width() // (len(main_player.hands) + 1)
@@ -52,9 +74,9 @@ def display_game_state(screen, main_player, dealer, bot_players, card_images, ca
             shift = 30 + 15 * (hand.cards.__len__() - 1)
             x = (i + 1) * players_step
             y = screen.get_height() - 200
-            display_hand(hand, x - shift, y, screen, card_images, font)
+            display_hand(hand, x - shift, y, screen)
         shift = 30 + 50 * (dealer.hand.__len__() - 1)
-        display_hand_dealer(dealer, screen.get_width()//2 - shift , 20, screen, card_images, font, dealer_show_all)
+        display_hand_dealer(dealer, screen.get_width()//2 - shift , 20, screen, dealer_show_all)
 
         center_y = 80
         radius = 300
@@ -70,7 +92,7 @@ def display_game_state(screen, main_player, dealer, bot_players, card_images, ca
                 angle = (i + 1) * angle_step_right
                 x = center_x_right_side + int(radius * math.cos(math.radians(angle)))
                 y = center_y + int(radius * math.sin(math.radians(angle)))
-                display_hand_bot(hand, x, y, screen, card_images_bots, font, True)
+                display_hand_bot(hand, x, y, screen, True)
 
         bots_left_side = bot_players[len(bot_players)//2:]
         left_side_hands = []
@@ -83,24 +105,24 @@ def display_game_state(screen, main_player, dealer, bot_players, card_images, ca
                 angle = i * angle_step_left + 90
                 x = center_x_left_side + int(radius * math.cos(math.radians(angle)))
                 y = center_y + int(radius * math.sin(math.radians(angle)))
-                display_hand_bot(hand, x, y, screen, card_images_bots, font, False)
+                display_hand_bot(hand, x, y, screen, False)
         
         if players_turn:
             if main_player.can_hit(main_player.hand_id):
-                draw_button("Hit", font, WHITE, screen, 20, screen.get_height()-120, 100, 50)
+                draw_button("Hit", WHITE, screen, 20, screen.get_height()-120, 100, 50)
             if main_player.can_stand():
-                draw_button("Stand", font, WHITE, screen, 20, screen.get_height()-60, 100, 50)
+                draw_button("Stand", WHITE, screen, 20, screen.get_height()-60, 100, 50)
             if main_player.can_double_down(main_player.hand_id):
-                draw_button("Double", font, WHITE, screen, 130, screen.get_height()-120, 100, 50)
+                draw_button("Double", WHITE, screen, 130, screen.get_height()-120, 100, 50)
             if main_player.can_split():
-                draw_button("Split", font, WHITE, screen, 130, screen.get_height()-60, 100, 50)
+                draw_button("Split", WHITE, screen, 130, screen.get_height()-60, 100, 50)
             if main_player.can_insurance(dealer.hand):
-                draw_button("Insurance", font, WHITE, screen, 240, screen.get_height()-120, 100, 50)
+                draw_button("Insurance", WHITE, screen, 240, screen.get_height()-120, 100, 50)
             if main_player.can_surrender():
-                draw_button("Surrender", font, WHITE, screen, 240, screen.get_height()-60, 100, 50)
+                draw_button("Surrender", WHITE, screen, 240, screen.get_height()-60, 100, 50)
         pygame.display.flip()
 
-def display_hand(hand, x, y, screen, card_images, font):
+def display_hand(hand, x, y, screen):
     for j, card in enumerate(hand.cards):
         if hand.has_doubled_down and j == 2:
             card_img = pygame.transform.rotate(card_images[str(card)], 90)
@@ -113,10 +135,10 @@ def display_hand(hand, x, y, screen, card_images, font):
         text = font.render("Blackjack!", True, WHITE)
         screen.blit(text, (x + 200, y + 100))
 
-def display_hand_bot(hand, x, y, screen, card_images, font, right_hand_side=True):
+def display_hand_bot(hand, x, y, screen, right_hand_side=True):
     font = pygame.font.Font(None, 18)
     for j, card in enumerate(hand.cards):
-        card_img = card_images[str(card)]
+        card_img = card_images_bots[str(card)]
         if hand.has_doubled_down and j == 2:
             card_img = pygame.transform.rotate(card_img, 90)
         
@@ -127,7 +149,7 @@ def display_hand_bot(hand, x, y, screen, card_images, font, right_hand_side=True
     text = font.render(f"{hand.name}({hand.get_hand_value()})", True, WHITE)
     screen.blit(text, (x, y + 65))
 
-def display_hand_dealer(dealer, x, y, screen, card_images, font, show_all=False):
+def display_hand_dealer(dealer, x, y, screen, show_all=False):
     for i, card in enumerate(dealer.hand):
         if i == 0:
             screen.blit(card_images[str(card)], (x + i * 100, y))

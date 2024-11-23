@@ -29,7 +29,7 @@ class Dealer():
 
         return value
     
-    def dealers_turn(self, deck, screen, main_player, bot_players, card_images, card_images_bots, font):
+    def dealers_turn(self, deck, screen, main_player, bot_players):
         """Starts the dealer's turn, dealing cards until the value is at"""
         print(f"Dealer's cards: {self}")
         while self.should_hit():
@@ -37,7 +37,7 @@ class Dealer():
             self.add_card(card)
             print(f"Dealer hits: {card}")
             time.sleep(3)
-            display_game_state(screen, main_player, self, bot_players, card_images, card_images_bots, font, True)
+            display_game_state(screen, main_player, self, bot_players, True)
         print(f"Dealer's hand: {self}")
     
     def reset_hand(self):

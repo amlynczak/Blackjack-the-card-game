@@ -3,6 +3,7 @@ import sys
 import os
 import random
 import time
+import json
 
 from blackjack.card import Card
 from blackjack.deck import Deck
@@ -35,7 +36,8 @@ class BlackjackGame:
         if first_table:
             self.bot_players = [Bot(name=f"Bot {i+1}", money = 60) for i in range(number_of_players - 1)]
         else:
-            self.bot_players = [CountingBot(name=f"Bot {i+1}", money = 100) for i in range(number_of_players - 1)]
+            method = json.loads(open("assets/settings.json").read())["counting_method"]
+            self.bot_players = [CountingBot(name=f"Bot {i+1}", money = 100, method = method) for i in range(number_of_players - 1)]
         self.dealer = Dealer()
         self.players_turn = len(self.bot_players)//2
 
@@ -57,14 +59,28 @@ class BlackjackGame:
 
         for i in range(2):
             for bot in self.bot_players[:self.players_turn]:
-                bot.add_card(self.deck.deal_card())
+                card = self.deck.deal_card()
+                bot.add_card(card)
+                if (not self.first_table):
+                    for bot in self.bot_players:
+                        bot.counter.update_count(card, self.deck.num_decks)
+                    
 
             self.main_player.add_card(self.deck.deal_card())
+            if (not self.first_table):
+                for bot in self.bot_players:
+                    bot.counter.update_count(self.main_player.hands[self.main_player.hand_id].cards[-1], self.deck.num_decks)
 
             for bot in self.bot_players[self.players_turn: len(self.bot_players)]:
                 bot.add_card(self.deck.deal_card())
+                if (not self.first_table):
+                    for bot in self.bot_players:
+                        bot.counter.update_count(bot.hands[bot.hand_id].cards[-1], self.deck.num_decks)
         
             self.dealer.add_card(self.deck.deal_card())
+            if (not self.first_table):
+                for bot in self.bot_players:
+                    bot.counter.update_count(self.dealer.hand[-1], self.deck.num_decks)
 
         if self.main_player.get_hand_value() == 21:
             print("♣♦♥♠ Blackjack! ♣♦♥♠")

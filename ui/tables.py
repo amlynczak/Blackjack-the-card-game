@@ -37,7 +37,7 @@ def choose_table(screen):
                 elif rect2.collidepoint(event.pos):
                     num_of_players = json.loads(open("assets/settings.json").read())["num_of_players"]
                     num_of_decks = json.loads(open("assets/settings.json").read())["num_of_decks"]
-                    game = BlackjackGame(number_of_players=num_of_players, number_of_decks=num_of_decks, first_table=False)
+                    game = BlackjackGame(number_of_players=num_of_players, number_of_decks=num_of_decks, counting_prohibited=False)
                     game.play()
                     screen = pygame.display.set_mode((800, 600))
                     screen.fill((0, 0, 0))

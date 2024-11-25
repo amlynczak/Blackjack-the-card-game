@@ -27,13 +27,13 @@ BLACK = (0, 0, 0)
 pygame.display.set_caption("Blackjack")        
 
 class BlackjackGame:
-    def __init__(self, number_of_decks = 1, number_of_players = 1, first_table = True, standard_bet = 20):
+    def __init__(self, number_of_decks = 1, number_of_players = 1, counting_prohibited = True, standard_bet = 20):
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.deck = Deck(number_of_decks)
-        self.first_table = first_table
+        self.counting_prohibited = counting_prohibited
         self.standard_bet = standard_bet
         self.main_player = Player(name="Player", money = 200)
-        if first_table:
+        if self.counting_prohibited:
             self.bot_players = [Bot(name=f"Bot {i+1}", money = 60) for i in range(number_of_players - 1)]
         else:
             method = json.loads(open("assets/settings.json").read())["counting_method"]
@@ -59,24 +59,24 @@ class BlackjackGame:
 
         for i in range(2):
             for bot in self.bot_players[:self.players_turn]:
-                if (self.first_table):
+                if (self.counting_prohibited):
                     bot.add_card(self.deck.deal_card())
                 else:
                     bot.add_card(self.deck.deal_card_and_update_counts(self.bot_players))
                     
 
-            if (self.first_table):
+            if (self.counting_prohibited):
                 self.main_player.add_card(self.deck.deal_card())
             else:
                 self.main_player.add_card(self.deck.deal_card_and_update_counts(self.bot_players))
             
             for bot in self.bot_players[self.players_turn: len(self.bot_players)]:
-                if (self.first_table):
+                if (self.counting_prohibited):
                     bot.add_card(self.deck.deal_card())
                 else:
                     bot.add_card(self.deck.deal_card_and_update_counts(self.bot_players))
 
-            if (self.first_table):        
+            if (self.counting_prohibited):        
                 self.dealer.add_card(self.deck.deal_card())
             else:
                 self.dealer.add_card(self.deck.deal_card_and_update_counts(self.bot_players))
@@ -174,8 +174,8 @@ class BlackjackGame:
                         bot.split(self.deck.deal_card(), self.deck.deal_card())
                     elif action == 'stand' and bot.can_stand():
                         print(f"{bot.name} stands")
+                        display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table)
                         break
-                    display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table)
                 bot.hand_id += 1
         
         # Main player turn

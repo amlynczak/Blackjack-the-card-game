@@ -46,8 +46,8 @@ def draw_button_unavailable(text, color, surface, x, y, width, height):
     pygame.draw.rect(surface, color, (x, y, width, height))
     draw_text(text, (0, 0, 0), surface, x + 10, y + 10)
 
-def draw_background(screen, first_table=True):
-    if first_table:
+def draw_background(screen, counting_prohibited=True):
+    if counting_prohibited:
         screen.fill(GREEN)
     else:
         screen.fill(DARK_BLUE)
@@ -66,8 +66,8 @@ def draw_background(screen, first_table=True):
     pygame.display.flip()
 
 
-def display_game_state(screen, main_player, dealer, bot_players, dealer_show_all=False, players_turn=False):
-        draw_background(screen)
+def display_game_state(screen, main_player, dealer, bot_players, counting_prohibited = True, dealer_show_all=False, players_turn=False):
+        draw_background(screen, counting_prohibited)
         
         players_step = screen.get_width() // (len(main_player.hands) + 1)
         for i, hand in enumerate(main_player.hands):

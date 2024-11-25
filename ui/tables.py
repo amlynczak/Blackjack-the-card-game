@@ -35,7 +35,13 @@ def choose_table(screen):
                     screen.fill((0, 0, 0))
                     pygame.display.set_caption("Choose table")
                 elif rect2.collidepoint(event.pos):
-                    return 'table2'
+                    num_of_players = json.loads(open("assets/settings.json").read())["num_of_players"]
+                    num_of_decks = json.loads(open("assets/settings.json").read())["num_of_decks"]
+                    game = BlackjackGame(number_of_players=num_of_players, number_of_decks=num_of_decks, counting_prohibited=False)
+                    game.play()
+                    screen = pygame.display.set_mode((800, 600))
+                    screen.fill((0, 0, 0))
+                    pygame.display.set_caption("Choose table")
 
         pygame.draw.rect(screen, (34, 139, 34), rect1)
         draw_text('Table 1', (255, 255, 255), screen, 150, 50)

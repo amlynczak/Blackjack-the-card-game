@@ -11,7 +11,7 @@ def settings(screen):
     clock = pygame.time.Clock()
 
     input_boxes = [pygame.Rect(300, 200, 200, 50), pygame.Rect(300, 300, 200, 50)]
-    input_texts = ['Number of decks', 'Number of players']
+    input_texts = ['Number of decks', 'Number of players', 'Language', 'counting method used']
 
     while True:
         for event in pygame.event.get():

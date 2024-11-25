@@ -1,6 +1,1 @@
-{
-    "num_of_decks": 4,
-    "num_of_players": 7,
-    "language": "pl",
-    "counting_method": "halves"
-}
+{"number_of_decks": 1, "number_of_players": 7, "language": "English", "counting_method": "halves"}

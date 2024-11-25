@@ -33,11 +33,13 @@ class BlackjackGame:
         self.counting_prohibited = counting_prohibited
         self.standard_bet = standard_bet
         self.main_player = Player(name="Player", money = 200)
+        with open("assets/random_names") as f:
+            random_names = f.read().splitlines()
         if self.counting_prohibited:
-            self.bot_players = [Bot(name=f"Bot {i+1}", money = 60) for i in range(number_of_players - 1)]
+            self.bot_players = [Bot(name=random.choice(random_names), money = 60) for i in range(number_of_players - 1)]
         else:
             method = json.loads(open("assets/settings.json").read())["counting_method"]
-            self.bot_players = [CountingBot(name=f"Bot {i+1}", money = 100, method = method, number_of_decks=number_of_decks) for i in range(number_of_players - 1)]
+            self.bot_players = [CountingBot(name=random.choice(random_names), money = 100, method = method, number_of_decks=number_of_decks) for i in range(number_of_players - 1)]
         self.dealer = Dealer()
         self.players_turn = len(self.bot_players)//2
 
@@ -320,4 +322,3 @@ class BlackjackGame:
                         return 'insurance'
                     elif x > 240 and x < 340 and y > SCREEN_HEIGHT - 60 and y < SCREEN_HEIGHT - 10:
                         return 'surrender'
-                    

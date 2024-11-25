@@ -13,7 +13,7 @@ from card_counter.methods.zen_count import ZenCountCounter
 import os
 
 class CountingBot(Bot):
-    def __init__(self, name="Counting Bot", money = 1000, method = 'high_low'):
+    def __init__(self, name="Counting Bot", money = 1000, method = 'high_low', number_of_decks = 1):
         '''Initializes the bot with a name, hand, and money'''
         super().__init__(name, money)
         method_switch = {
@@ -28,7 +28,7 @@ class CountingBot(Bot):
             'zen_count': ZenCountCounter
         }
 
-        self.counter = method_switch[method]()
+        self.counter = method_switch[method](number_of_decks)
 
     def decide_final_action(self, dealers_hand):
         '''Decides whether to hit or stand based on the count'''
@@ -61,15 +61,16 @@ class CountingBot(Bot):
                     if line.startswith(str(hand_value)):
                         action_tmp = line.split()[dealer_card_num]
         
+        true_count = self.counter.get_count()
+        print(true_count)
+
         if action != action_tmp:
             if action_tmp[0] == '+':
                 true_count_threshold = int(action_tmp[1:])
-                true_count = self.counter.get_count()
                 if true_count >= true_count_threshold:
                     action = self.convert_action(action, True)
             elif action_tmp[0] == '-':
                 true_count_threshold = int(action_tmp[1:])
-                true_count = self.counter.get_count()
                 if true_count <= ((-1) * true_count_threshold):
                     action = self.convert_action(action, False)
 

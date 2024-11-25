@@ -37,7 +37,7 @@ class BlackjackGame:
             self.bot_players = [Bot(name=f"Bot {i+1}", money = 60) for i in range(number_of_players - 1)]
         else:
             method = json.loads(open("assets/settings.json").read())["counting_method"]
-            self.bot_players = [CountingBot(name=f"Bot {i+1}", money = 100, method = method) for i in range(number_of_players - 1)]
+            self.bot_players = [CountingBot(name=f"Bot {i+1}", money = 100, method = method, number_of_decks=number_of_decks) for i in range(number_of_players - 1)]
         self.dealer = Dealer()
         self.players_turn = len(self.bot_players)//2
 
@@ -97,7 +97,7 @@ class BlackjackGame:
         
         print(f"Dealer: {self.dealer.hand[0]} and one [hidden] card")
 
-        display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table)
+        display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited)
 
 
     def check_winner(self):
@@ -158,23 +158,30 @@ class BlackjackGame:
         for bot in self.bot_players[:self.players_turn]:
             while bot.hand_id < len(bot.hands):
                 while True and bot.hands[bot.hand_id].isBlackjack == False:
-                    display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table)
+                    display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited)
                     time.sleep(1)
                     action = bot.decide_final_action(self.dealer.hand)
                     if action == 'hit' and bot.can_hit():
                         print(f"{bot.name} hits")
-                        if not bot.hit(self.deck.deal_card(), bot.hand_id):
+                        if self.counting_prohibited and not bot.hit(self.deck.deal_card(), bot.hand_id):
+                            break
+                        elif not self.counting_prohibited and not bot.hit(self.deck.deal_card_and_update_counts(self.bot_players), bot.hand_id):
                             break
                     elif action == 'double' and bot.can_double_down():
                         print(f"{bot.name} doubles down")
-                        if not bot.double_down(self.deck.deal_card(), bot.hand_id):
+                        if self.counting_prohibited and not bot.double_down(self.deck.deal_card(), bot.hand_id):
+                            break
+                        elif not self.counting_prohibited and not bot.double_down(self.deck.deal_card_and_update_counts(self.bot_players), bot.hand_id):
                             break
                     elif action == 'split' and bot.can_split():
                         print(f"{bot.name} splits")
-                        bot.split(self.deck.deal_card(), self.deck.deal_card())
+                        if self.counting_prohibited:
+                            bot.split(self.deck.deal_card(), self.deck.deal_card())
+                        else:
+                            bot.split(self.deck.deal_card_and_update_counts(self.bot_players), self.deck.deal_card_and_update_counts(self.bot_players))
                     elif action == 'stand' and bot.can_stand():
                         print(f"{bot.name} stands")
-                        display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table)
+                        display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited)
                         break
                 bot.hand_id += 1
         
@@ -182,52 +189,65 @@ class BlackjackGame:
         print("player's turn")
         while self.main_player.hand_id < len(self.main_player.hands):
             while True and self.main_player.hands[self.main_player.hand_id].isBlackjack == False:
-                display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table, players_turn=True)
+                display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited, players_turn=True)
                 action = self.get_player_action()
                 if action == 'hit' and self.main_player.can_hit():
-                    if not self.main_player.hit(self.deck.deal_card(), self.main_player.hand_id):
+                    if self.counting_prohibited and not self.main_player.hit(self.deck.deal_card(), self.main_player.hand_id):
+                        break
+                    elif not self.counting_prohibited and not self.main_player.hit(self.deck.deal_card_and_update_counts(self.bot_players), self.main_player.hand_id):
                         break
                 elif action == 'double' and self.main_player.can_double_down():
-                    if not self.main_player.double_down(self.deck.deal_card(), self.main_player.hand_id):
+                    if self.counting_prohibited and not self.main_player.double_down(self.deck.deal_card(), self.main_player.hand_id):
+                        break
+                    elif not self.counting_prohibited and not self.main_player.double_down(self.deck.deal_card_and_update_counts(self.bot_players), self.main_player.hand_id):
                         break
                 elif action == 'split' and self.main_player.can_split():
-                    self.main_player.split(self.deck.deal_card(), self.deck.deal_card())
+                    if self.counting_prohibited:
+                        self.main_player.split(self.deck.deal_card(), self.deck.deal_card())
+                    else:
+                        self.main_player.split(self.deck.deal_card_and_update_counts(self.bot_players), self.deck.deal_card_and_update_counts(self.bot_players))
                 elif action == 'insurance' and self.main_player.can_insurance(self.dealer.hand):
                     self.main_player.insurance(self.dealer.hand)
                 elif action == 'surrender' and self.main_player.can_surrender():
                     self.main_player.surrender()
                     break
                 elif action == 'stand' and self.main_player.can_stand():
+                    display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited, players_turn=True)
                     break
-            display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table, players_turn=True)
             self.main_player.hand_id += 1
 
         # Bot players turn
         for bot in self.bot_players[self.players_turn:]:
             while bot.hand_id < len(bot.hands):
                 while True and bot.hands[bot.hand_id].isBlackjack == False:
-                    display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table)
+                    display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited)
                     time.sleep(1)
                     action = bot.decide_final_action(self.dealer.hand)
-                    print(f"{bot.name} choose to: {action}")
                     if action == 'hit' and bot.can_hit():
                         print(f"{bot.name} hits")
-                        if not bot.hit(self.deck.deal_card(), bot.hand_id):
+                        if self.counting_prohibited and not bot.hit(self.deck.deal_card(), bot.hand_id):
+                            break
+                        elif not self.counting_prohibited and not bot.hit(self.deck.deal_card_and_update_counts(self.bot_players), bot.hand_id):
                             break
                     elif action == 'double' and bot.can_double_down():
                         print(f"{bot.name} doubles down")
-                        if not bot.double_down(self.deck.deal_card(), bot.hand_id):
+                        if self.counting_prohibited and not bot.double_down(self.deck.deal_card(), bot.hand_id):
+                            break
+                        elif not self.counting_prohibited and not bot.double_down(self.deck.deal_card_and_update_counts(self.bot_players), bot.hand_id):
                             break
                     elif action == 'split' and bot.can_split():
                         print(f"{bot.name} splits")
-                        bot.split(self.deck.deal_card(), self.deck.deal_card())
+                        if self.counting_prohibited:
+                            bot.split(self.deck.deal_card(), self.deck.deal_card())
+                        else:
+                            bot.split(self.deck.deal_card_and_update_counts(self.bot_players), self.deck.deal_card_and_update_counts(self.bot_players))
                     elif action == 'stand' and bot.can_stand():
                         print(f"{bot.name} stands")
+                        display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited)
                         break
-                    display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table)
                 bot.hand_id += 1
 
-        display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table, dealer_show_all=True)
+        display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited, dealer_show_all=True)
         self.dealer.dealers_turn(self.deck, self.screen, self.main_player, self.bot_players)
         time.sleep(5)
 

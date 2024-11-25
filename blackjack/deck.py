@@ -23,3 +23,10 @@ class Deck:
         if len(self.cards) == 0:
             self.build_deck()
         return self.cards.pop()
+
+    def deal_card_and_update_counts(self, players):
+        '''Deals a card from the deck and updates the counts of the players'''
+        card = self.deal_card()
+        for player in players:
+            player.update_count(card)
+        return card

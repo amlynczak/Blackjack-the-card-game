@@ -59,29 +59,28 @@ class BlackjackGame:
 
         for i in range(2):
             for bot in self.bot_players[:self.players_turn]:
-                card = self.deck.deal_card()
-                bot.add_card(card)
-                if (not self.first_table):
-                    for bot in self.bot_players:
-                        bot.counter.update_count(card, self.deck.num_decks)
+                if (self.first_table):
+                    bot.add_card(self.deck.deal_card())
+                else:
+                    bot.add_card(self.deck.deal_card_and_update_counts(self.bot_players))
                     
 
-            self.main_player.add_card(self.deck.deal_card())
-            if (not self.first_table):
-                for bot in self.bot_players:
-                    bot.counter.update_count(self.main_player.hands[self.main_player.hand_id].cards[-1], self.deck.num_decks)
-
+            if (self.first_table):
+                self.main_player.add_card(self.deck.deal_card())
+            else:
+                self.main_player.add_card(self.deck.deal_card_and_update_counts(self.bot_players))
+            
             for bot in self.bot_players[self.players_turn: len(self.bot_players)]:
-                bot.add_card(self.deck.deal_card())
-                if (not self.first_table):
-                    for bot in self.bot_players:
-                        bot.counter.update_count(bot.hands[bot.hand_id].cards[-1], self.deck.num_decks)
-        
-            self.dealer.add_card(self.deck.deal_card())
-            if (not self.first_table):
-                for bot in self.bot_players:
-                    bot.counter.update_count(self.dealer.hand[-1], self.deck.num_decks)
+                if (self.first_table):
+                    bot.add_card(self.deck.deal_card())
+                else:
+                    bot.add_card(self.deck.deal_card_and_update_counts(self.bot_players))
 
+            if (self.first_table):        
+                self.dealer.add_card(self.deck.deal_card())
+            else:
+                self.dealer.add_card(self.deck.deal_card_and_update_counts(self.bot_players))
+            
         if self.main_player.get_hand_value() == 21:
             print("♣♦♥♠ Blackjack! ♣♦♥♠")
             self.main_player.hands[self.main_player.hand_id].isBlackjack = True
@@ -155,28 +154,25 @@ class BlackjackGame:
     def play_round(self):
         """Plays a game of blackjack"""
         self.start_new_round()
-        print("STARTING NEW ROUND")
         
         for bot in self.bot_players[:self.players_turn]:
             while bot.hand_id < len(bot.hands):
                 while True and bot.hands[bot.hand_id].isBlackjack == False:
                     display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table)
                     time.sleep(1)
-                    print("BOT SHOULD DECIDE")
                     action = bot.decide_final_action(self.dealer.hand)
-                    if action == 'hit':
+                    if action == 'hit' and bot.can_hit():
                         print(f"{bot.name} hits")
                         if not bot.hit(self.deck.deal_card(), bot.hand_id):
                             break
-                    elif action == 'double':
+                    elif action == 'double' and bot.can_double_down():
                         print(f"{bot.name} doubles down")
                         if not bot.double_down(self.deck.deal_card(), bot.hand_id):
                             break
-                    elif action == 'split':
-                        if bot.can_split():
-                            print(f"{bot.name} splits")
-                            bot.split(self.deck.deal_card(), self.deck.deal_card())
-                    elif action == 'stand':
+                    elif action == 'split' and bot.can_split():
+                        print(f"{bot.name} splits")
+                        bot.split(self.deck.deal_card(), self.deck.deal_card())
+                    elif action == 'stand' and bot.can_stand():
                         print(f"{bot.name} stands")
                         break
                     display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table)
@@ -188,24 +184,20 @@ class BlackjackGame:
             while True and self.main_player.hands[self.main_player.hand_id].isBlackjack == False:
                 display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table, players_turn=True)
                 action = self.get_player_action()
-                if action == 'hit':
+                if action == 'hit' and self.main_player.can_hit():
                     if not self.main_player.hit(self.deck.deal_card(), self.main_player.hand_id):
                         break
-                elif action == 'double':
-                    if self.main_player.can_double_down():
-                        if not self.main_player.double_down(self.deck.deal_card(), self.main_player.hand_id):
-                            break
-                elif action == 'split':
-                    if self.main_player.can_split():
-                        self.main_player.split(self.deck.deal_card(), self.deck.deal_card())
-                elif action == 'insurance':
-                    if self.main_player.can_insurance(self.dealer.hand):
-                        self.main_player.insurance(self.dealer.hand)
-                elif action == 'surrender':
-                    if self.main_player.can_surrender():
-                        self.main_player.surrender()
+                elif action == 'double' and self.main_player.can_double_down():
+                    if not self.main_player.double_down(self.deck.deal_card(), self.main_player.hand_id):
                         break
-                elif action == 'stand':
+                elif action == 'split' and self.main_player.can_split():
+                    self.main_player.split(self.deck.deal_card(), self.deck.deal_card())
+                elif action == 'insurance' and self.main_player.can_insurance(self.dealer.hand):
+                    self.main_player.insurance(self.dealer.hand)
+                elif action == 'surrender' and self.main_player.can_surrender():
+                    self.main_player.surrender()
+                    break
+                elif action == 'stand' and self.main_player.can_stand():
                     break
             display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table, players_turn=True)
             self.main_player.hand_id += 1
@@ -218,19 +210,18 @@ class BlackjackGame:
                     time.sleep(1)
                     action = bot.decide_final_action(self.dealer.hand)
                     print(f"{bot.name} choose to: {action}")
-                    if action == 'hit':
+                    if action == 'hit' and bot.can_hit():
                         print(f"{bot.name} hits")
                         if not bot.hit(self.deck.deal_card(), bot.hand_id):
                             break
-                    elif action == 'double':
+                    elif action == 'double' and bot.can_double_down():
                         print(f"{bot.name} doubles down")
                         if not bot.double_down(self.deck.deal_card(), bot.hand_id):
                             break
-                    elif action == 'split':
-                        if bot.can_split():
-                            print(f"{bot.name} splits")
-                            bot.split(self.deck.deal_card(), self.deck.deal_card())
-                    elif action == 'stand':
+                    elif action == 'split' and bot.can_split():
+                        print(f"{bot.name} splits")
+                        bot.split(self.deck.deal_card(), self.deck.deal_card())
+                    elif action == 'stand' and bot.can_stand():
                         print(f"{bot.name} stands")
                         break
                     display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.first_table)

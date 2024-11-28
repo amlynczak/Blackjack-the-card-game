@@ -32,14 +32,15 @@ class BlackjackGame:
         self.deck = Deck(number_of_decks)
         self.counting_prohibited = counting_prohibited
         self.standard_bet = standard_bet
-        self.main_player = Player(name="Player", money = 200)
+        method = json.loads(open("assets/settings.json").read())["counting_method"]
+        self.main_player = Player(name="Player", method = method, money = 200)
         with open("assets/random_names") as f:
             random_names = f.read().splitlines()
+            random.shuffle(random_names)
         if self.counting_prohibited:
-            self.bot_players = [Bot(name=random.choice(random_names), money = 60) for i in range(number_of_players - 1)]
+            self.bot_players = [Bot(name=random_names[i], money = 200) for i in range(number_of_players - 1)]
         else:
-            method = json.loads(open("assets/settings.json").read())["counting_method"]
-            self.bot_players = [CountingBot(name=random.choice(random_names), money = 100, method = method, number_of_decks=number_of_decks) for i in range(number_of_players - 1)]
+            self.bot_players = [CountingBot(name=random_names[i], money = 150, number_of_decks=number_of_decks) for i in range(number_of_players - 1)]
         self.dealer = Dealer()
         self.players_turn = len(self.bot_players)//2
 

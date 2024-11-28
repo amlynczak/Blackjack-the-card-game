@@ -1,8 +1,20 @@
 from .card import Card
 from .hand import Hand
+from card_counter.methods.halves import HalvesCounter
+from card_counter.methods.high_low import HighLowCounter
+from card_counter.methods.high_optI import HighOptICounter
+from card_counter.methods.high_optII import HighOptIICounter
+from card_counter.methods.ko import KOCounter
+from card_counter.methods.omega import OmegaCounter
+from card_counter.methods.red_seven import Red7Counter
+from card_counter.methods.ten_count import TenCountCounter
+from card_counter.methods.zen_count import ZenCountCounter
+
+import os
+import json
 
 class Player:
-    def __init__(self, name, money = 1000):
+    def __init__(self, name, method, money = 1000):
         '''Initializes the player with a name, hand, and money'''
         self.name = name
         self.hands = [Hand(name, bet = 0)]
@@ -11,6 +23,22 @@ class Player:
         self.insurance_bet = 0
         self.is_insured = False
         self.has_surrenderred = False
+
+        method_switch = {
+            'halves': HalvesCounter,
+            'high_low': HighLowCounter,
+            'high_optI': HighOptICounter,
+            'high_optII': HighOptIICounter,
+            'ko': KOCounter,
+            'omega': OmegaCounter,
+            'red_seven': Red7Counter,
+            'ten_count': TenCountCounter,
+            'zen_count': ZenCountCounter
+        }
+
+        method = json.loads(open("assets/settings.json").read())["counting_method"]
+        number_of_decks = json.loads(open("assets/settings.json").read())["number_of_decks"]
+        self.counter = method_switch[method](number_of_decks)
 
     def add_card(self, card, hand_id = 0):
         """Adds a card to the player's hand."""

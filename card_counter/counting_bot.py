@@ -11,9 +11,10 @@ from card_counter.methods.zen_count import ZenCountCounter
 
 
 import os
+import random
 
 class CountingBot(Bot):
-    def __init__(self, name="Counting Bot", money = 1000, method = 'high_low', number_of_decks = 1):
+    def __init__(self, name="Counting Bot", money = 1000, number_of_decks = 1):
         '''Initializes the bot with a name, hand, and money'''
         super().__init__(name, money)
         method_switch = {
@@ -28,7 +29,7 @@ class CountingBot(Bot):
             'zen_count': ZenCountCounter
         }
 
-        self.counter = method_switch[method](number_of_decks)
+        self.counter = method_switch[random.choice(list(method_switch.keys()))](number_of_decks)
 
     def decide_final_action(self, dealers_hand):
         '''Decides whether to hit or stand based on the count'''

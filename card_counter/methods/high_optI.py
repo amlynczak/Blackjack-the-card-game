@@ -7,7 +7,7 @@ class HighOptICounter(Counter):
     def card_value(self, card):
         if card.rank in ['2', '7', '8', '9', 'A']:
             return 0
-        elif card.rank in ['3', '4', '6']:
+        elif card.rank in ['3', '4', '5', '6']:
             return 1
         elif card.rank in ['10', 'J', 'Q', 'K']:
             return -1

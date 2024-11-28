@@ -18,7 +18,7 @@ class Counter(ABC):
         self.update_true_count()
 
     def update_true_count(self):
-        decks_remaining = self.num_decks - round(self.cards_dealt / 52)
+        decks_remaining = max(self.num_decks - round(self.cards_dealt / 52), 1)
         self.true_count = self.running_count // decks_remaining
 
     def get_count(self):

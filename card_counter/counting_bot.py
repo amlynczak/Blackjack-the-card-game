@@ -49,18 +49,27 @@ class CountingBot(Bot):
                 for line in file:
                     if line.startswith(self.hands[self.hand_id].cards[0].rank):
                         action_tmp = line.split()[dealer_card_num]
+                        print(action)
+                        print(action_tmp)
+                        break
         elif 'A' in [card.rank for card in self.hands[self.hand_id].cards] and len(self.hands[self.hand_id].cards) == 2:
             file_path = os.path.join(os.path.dirname(__file__), "../assets/counting_cards/pairs_with_aces")
             with open(file_path, 'r') as file:
                 for line in file:
                     if line.startswith(self.hands[self.hand_id].cards[0].rank):
                         action_tmp = line.split()[dealer_card_num]
+                        print(action)
+                        print(action_tmp)
+                        break
         else:
             file_path = os.path.join(os.path.dirname(__file__), "../assets/counting_cards/points")
             with open(file_path, 'r') as file:
                 for line in file:
                     if line.startswith(str(hand_value)):
                         action_tmp = line.split()[dealer_card_num]
+                        print(action)
+                        print(action_tmp)
+                        break
         
         true_count = self.counter.get_count()
         print(true_count)
@@ -69,11 +78,11 @@ class CountingBot(Bot):
             if action_tmp[0] == '+':
                 true_count_threshold = int(action_tmp[1:])
                 if true_count >= true_count_threshold:
-                    action = self.convert_action(action, True)
+                    action = self.more_aggressive(action)
             elif action_tmp[0] == '-':
                 true_count_threshold = int(action_tmp[1:])
                 if true_count <= ((-1) * true_count_threshold):
-                    action = self.convert_action(action, False)
+                    action = self.play_safe(action)
 
         if action == 'H':
             return 'hit'
@@ -83,39 +92,25 @@ class CountingBot(Bot):
             return 'double'
         elif action == 'P':
             return 'split'
-        elif action == 'I':
-            return 'insurance'
-        elif action == 'R':
-            return 'surrender'
 
     def more_aggressive(self, action):
-        '''Returns a more aggressive action'''
         if action == 'H':
             return 'D'
         elif action == 'S':
             return 'H'
-        elif action == 'D':
-            return 'H'
         elif action == 'P':
-            return 'H'
-        elif action == 'I':
-            return 'H'
-        elif action == 'R':
-            return 'H'
+            return 'P'
+        elif action == 'D':
+            return 'D'
         
     def play_safe(self, action):
-        '''Returns a safer action'''
         if action == 'H':
             return 'S'
         elif action == 'S':
-            return 'H'
+            return 'S'
         elif action == 'D':
             return 'H'
         elif action == 'P':
-            return 'H'
-        elif action == 'I':
-            return 'H'
-        elif action == 'R':
             return 'H'
         
     def convert_action(self, action, up = True):

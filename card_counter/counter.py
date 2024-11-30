@@ -15,6 +15,8 @@ class Counter(ABC):
     def update_count(self, card):
         self.running_count += self.card_value(card)
         self.cards_dealt += 1
+        if self.num_decks * 52 <= self.cards_dealt:
+            self.reset()
         self.update_true_count()
 
     def update_true_count(self):

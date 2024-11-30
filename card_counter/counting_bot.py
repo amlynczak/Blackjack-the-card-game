@@ -88,11 +88,39 @@ class CountingBot(Bot):
         elif action == 'R':
             return 'surrender'
 
-    def convert_action(self, action, up = True):
-        if action == 'H' and up:
+    def more_aggressive(self, action):
+        '''Returns a more aggressive action'''
+        if action == 'H':
             return 'D'
-        elif action == 'H' and not up:
+        elif action == 'S':
+            return 'H'
+        elif action == 'D':
+            return 'H'
+        elif action == 'P':
+            return 'H'
+        elif action == 'I':
+            return 'H'
+        elif action == 'R':
+            return 'H'
+        
+    def play_safe(self, action):
+        '''Returns a safer action'''
+        if action == 'H':
             return 'S'
+        elif action == 'S':
+            return 'H'
+        elif action == 'D':
+            return 'H'
+        elif action == 'P':
+            return 'H'
+        elif action == 'I':
+            return 'H'
+        elif action == 'R':
+            return 'H'
+        
+    def convert_action(self, action, up = True):
+        if action == 'H':
+            return 'D' if up else 'S'
         elif action == 'S' and up:
             return 'H'
         elif action == 'D' and not up:

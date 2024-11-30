@@ -95,7 +95,7 @@ class CountingBot(Bot):
 
     def more_aggressive(self, action):
         if action == 'H':
-            return 'D'
+            return 'D' if self.can_double_down() else 'H'
         elif action == 'S':
             return 'H'
         elif action == 'P':

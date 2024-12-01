@@ -22,10 +22,11 @@ class Bot(Player):
                 for line in file:
                     if line.startswith(self.hands[self.hand_id].cards[0].rank):
                         action = line.split()[dealer_card_num]
+                        print("split in bot, action: ", action)
                         if self.can_split() and action == 'P':
                             break
-                        else:
-                            action = 'U'
+                        elif action == 'H' or action == 'S' or action == 'D':
+                            break
         elif 'A' in [card.rank for card in self.hands[self.hand_id].cards] and len(self.hands[self.hand_id].cards) == 2:
             non_ace_card = [card for card in self.hands[self.hand_id].cards if card.rank != 'A'][0]
             file_path = os.path.join(os.path.dirname(__file__), "../assets/basic_strategy/pairs_with_aces")
@@ -40,12 +41,15 @@ class Bot(Player):
                 for line in file:
                     if line.startswith(str(hand_value)):
                         action = line.split()[dealer_card_num]
+                        if action == 'D' and not self.can_double_down():
+                            action = 'H'
                         break
 
         return action
             
     def decide_final_action(self, dealer_hand):
         action  = self.decide_action(dealer_hand)
+        print("action in bot: ", action)
 
         if action == 'H':
             return 'hit'

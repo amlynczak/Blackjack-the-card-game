@@ -48,14 +48,14 @@ class Player:
         '''Calculates the value of the player's hand'''
         return self.hands[hand_id].get_hand_value()
     
-    def can_play(self, standard_bet):
-        return self.money >= standard_bet
+    def can_play(self, bet):
+        return self.money >= bet
 
-    def reset_hand(self, standard_bet):
+    def reset_hand(self, bet):
         """Clears the player's hand for a new round."""
         self.hands.clear()
-        self.hands = [Hand(self.name, standard_bet)]
-        self.money -= standard_bet
+        self.hands = [Hand(self.name, bet)]
+        self.money -= bet
         self.hand_id = 0
         self.insurance_bet = 0
         self.is_insured = False

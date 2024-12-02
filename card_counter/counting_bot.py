@@ -49,18 +49,27 @@ class CountingBot(Bot):
                 for line in file:
                     if line.startswith(self.hands[self.hand_id].cards[0].rank):
                         action_tmp = line.split()[dealer_card_num]
+                        print("split deciding")
+                        break
         elif 'A' in [card.rank for card in self.hands[self.hand_id].cards] and len(self.hands[self.hand_id].cards) == 2:
             file_path = os.path.join(os.path.dirname(__file__), "../assets/counting_cards/pairs_with_aces")
             with open(file_path, 'r') as file:
                 for line in file:
                     if line.startswith(self.hands[self.hand_id].cards[0].rank):
                         action_tmp = line.split()[dealer_card_num]
+                        print("ace deciding")
+                        break
         else:
             file_path = os.path.join(os.path.dirname(__file__), "../assets/counting_cards/points")
             with open(file_path, 'r') as file:
                 for line in file:
                     if line.startswith(str(hand_value)):
                         action_tmp = line.split()[dealer_card_num]
+                        print("point deciding")
+                        break
+
+        print(action)
+        print(action_tmp)
         
         true_count = self.counter.get_count()
         print(true_count)
@@ -69,11 +78,13 @@ class CountingBot(Bot):
             if action_tmp[0] == '+':
                 true_count_threshold = int(action_tmp[1:])
                 if true_count >= true_count_threshold:
-                    action = self.convert_action(action, True)
+                    print("more aggressive")
+                    action = self.more_aggressive(action)
             elif action_tmp[0] == '-':
                 true_count_threshold = int(action_tmp[1:])
                 if true_count <= ((-1) * true_count_threshold):
-                    action = self.convert_action(action, False)
+                    print("play safe")
+                    action = self.play_safe(action)
 
         if action == 'H':
             return 'hit'
@@ -83,26 +94,41 @@ class CountingBot(Bot):
             return 'double'
         elif action == 'P':
             return 'split'
-        elif action == 'I':
-            return 'insurance'
-        elif action == 'R':
-            return 'surrender'
 
-    def convert_action(self, action, up = True):
-        if action == 'H' and up:
+    def more_aggressive(self, action):
+        if action == 'H':
+            return 'D' if self.can_double_down() else 'H'
+        elif action == 'S':
+            return 'H'
+        elif action == 'P':
+            return 'P'
+        elif action == 'D':
             return 'D'
-        elif action == 'H' and not up:
+        
+    def play_safe(self, action):
+        if action == 'H':
             return 'S'
-        elif action == 'S' and up:
+        elif action == 'S':
+            return 'S'
+        elif action == 'D':
             return 'H'
-        elif action == 'D' and not up:
+        elif action == 'P':
             return 'H'
-        elif action == 'P' and not up:
-            return 'H'
-        
-        return action #TODO do proper conversion
 
-        
+    def decide_bet(self, standard_bet):
+        true_count = self.counter.get_count()
+        file_path = os.path.join(os.path.dirname(__file__), "../assets/counting_cards/casino_adv")
+        with open(file_path, 'r') as file:
+            for line in file:
+                if line.startswith(str(int(true_count))):
+                    bet = round(float(line.split()[1]) * self.money * (-1) / 5) * 5
+                    break
+        if bet > self.money or bet < standard_bet:
+            return standard_bet
+        else:
+            return bet
+
+
     def update_count(self, card):
         '''Updates the count based on the card'''
         self.counter.update_count(card)

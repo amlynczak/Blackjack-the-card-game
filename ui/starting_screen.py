@@ -12,9 +12,9 @@ os.environ['SDL_VIDEO_CENTERED'] = '1'
 class StartScreen:
     def __init__(self):
         pygame.init()
-        pygame.mixer.init()  # Initialize the mixer module
-        pygame.mixer.music.load('assets/music/FLOWERS.mp3')  # Load the music file
-        pygame.mixer.music.play(-1)  # Play the music in a loop
+        #pygame.mixer.init()  # Initialize the mixer module
+        #pygame.mixer.music.load('assets/music/FLOWERS.mp3')  # Load the music file
+        #pygame.mixer.music.play(-1)  # Play the music in a loop
         self.screen = pygame.display.set_mode((800, 600))
         pygame.display.set_caption("♣♦♥♠ Blackjack game ♣♦♥♠")
         self.clock = pygame.time.Clock()

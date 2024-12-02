@@ -22,10 +22,11 @@ class Bot(Player):
                 for line in file:
                     if line.startswith(self.hands[self.hand_id].cards[0].rank):
                         action = line.split()[dealer_card_num]
+                        print("split in bot, action: ", action)
                         if self.can_split() and action == 'P':
                             break
-                        else:
-                            action = 'U'
+                        elif action == 'H' or action == 'S' or action == 'D':
+                            break
         elif 'A' in [card.rank for card in self.hands[self.hand_id].cards] and len(self.hands[self.hand_id].cards) == 2:
             non_ace_card = [card for card in self.hands[self.hand_id].cards if card.rank != 'A'][0]
             file_path = os.path.join(os.path.dirname(__file__), "../assets/basic_strategy/pairs_with_aces")
@@ -40,23 +41,35 @@ class Bot(Player):
                 for line in file:
                     if line.startswith(str(hand_value)):
                         action = line.split()[dealer_card_num]
+                        if action == 'D' and not self.can_double_down():
+                            action = 'H'
                         break
 
         return action
             
     def decide_final_action(self, dealer_hand):
         action  = self.decide_action(dealer_hand)
+        print("action in bot: ", action)
+        r = random.uniform(0, 1)
 
-        if action == 'H':
+        if action == 'H' and r <= 0.9:
             return 'hit'
-        elif action == 'D':
+        elif action == 'D' and r <= 0.9:
             return 'double'
-        elif action == 'P':
+        elif action == 'P' and r <= 0.9:
             return 'split'
-        elif action == 'S':
+        elif action == 'S' and r <= 0.9:
             return 'stand'
         else:
             if self.get_hand_value() < 17:
                 return 'hit'
             else:
                 return 'stand'
+            
+    def decide_bet(self, standard_bet):
+        '''Decides the bet to place based on the standard bet'''
+        r = random.uniform(0, 1)
+        if r <= 0.9:
+            return standard_bet
+        else:
+            return standard_bet * random.randint(1, 5)

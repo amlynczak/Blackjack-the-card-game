@@ -213,6 +213,11 @@ class BlackjackGame:
                         print(f"{bot.name} stands")
                         display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited)
                         break
+                    elif action == 'surrender' and bot.can_surrender():
+                        bot.surrender()
+                        break
+                    elif action == 'insurance' and bot.can_insurance(self.dealer.hand):
+                        bot.insurance(self.dealer.hand)
                 bot.hand_id += 1
         
         # Main player turn
@@ -275,6 +280,11 @@ class BlackjackGame:
                         print(f"{bot.name} stands")
                         display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited)
                         break
+                    elif action == 'surrender' and bot.can_surrender():
+                        bot.surrender()
+                        break
+                    elif action == 'insurance' and bot.can_insurance(self.dealer.hand):
+                        bot.insurance(self.dealer.hand)
                 bot.hand_id += 1
 
         display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited, dealer_show_all=True)

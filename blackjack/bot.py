@@ -50,14 +50,15 @@ class Bot(Player):
     def decide_final_action(self, dealer_hand):
         action  = self.decide_action(dealer_hand)
         print("action in bot: ", action)
+        r = random.uniform(0, 1)
 
-        if action == 'H':
+        if action == 'H' and r <= 0.9:
             return 'hit'
-        elif action == 'D':
+        elif action == 'D' and r <= 0.9:
             return 'double'
-        elif action == 'P':
+        elif action == 'P' and r <= 0.9:
             return 'split'
-        elif action == 'S':
+        elif action == 'S' and r <= 0.9:
             return 'stand'
         else:
             if self.get_hand_value() < 17:
@@ -67,8 +68,8 @@ class Bot(Player):
             
     def decide_bet(self, standard_bet):
         '''Decides the bet to place based on the standard bet'''
-        r = random.random()
-        if r < 0.9:
+        r = random.uniform(0, 1)
+        if r <= 0.9:
             return standard_bet
         else:
-            return standard_bet * 2
+            return standard_bet * random.randint(1, 5)

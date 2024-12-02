@@ -64,3 +64,11 @@ class Bot(Player):
                 return 'hit'
             else:
                 return 'stand'
+            
+    def decide_bet(self, standard_bet):
+        '''Decides the bet to place based on the standard bet'''
+        r = random.random()
+        if r < 0.9:
+            return standard_bet
+        else:
+            return standard_bet * 2

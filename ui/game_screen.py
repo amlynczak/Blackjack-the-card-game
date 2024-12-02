@@ -80,7 +80,8 @@ class BlackjackGame:
             
         for bot in self.bot_players[:]:
             if bot.can_play(self.standard_bet):
-                bot.reset_hand(self.standard_bet)
+                bet = bot.decide_bet(self.standard_bet)
+                bot.reset_hand(bet)
             else:
                 print(f"{bot.name} doesn't have enough money to play.")
                 self.bot_players.remove(bot)

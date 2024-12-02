@@ -114,7 +114,21 @@ class CountingBot(Bot):
             return 'H'
         elif action == 'P':
             return 'H'
-        
+
+    def decide_bet(self, standard_bet):
+        true_count = self.counter.get_count()
+        file_path = os.path.join(os.path.dirname(__file__), "../assets/counting_cards/casino_adv")
+        with open(file_path, 'r') as file:
+            for line in file:
+                if line.startswith(str(int(true_count))):
+                    bet = round(float(line.split()[1]) * self.money * (-1) / 5) * 5
+                    break
+        if bet > self.money or bet < standard_bet:
+            return standard_bet
+        else:
+            return bet
+
+
     def update_count(self, card):
         '''Updates the count based on the card'''
         self.counter.update_count(card)

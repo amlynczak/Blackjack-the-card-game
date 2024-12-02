@@ -147,7 +147,7 @@ def display_hand_bot(hand, x, y, screen, right_hand_side=True):
         else:
             screen.blit(card_img, (x + j * 20, y - j * 20))
     text = font.render(f"{hand.name}({hand.get_hand_value()})", True, WHITE)
-    screen.blit(text, (x, y + 65))
+    screen.blit(text, (x - 20, y + 65))
 
 def display_hand_dealer(dealer, x, y, screen, show_all=False):
     for i, card in enumerate(dealer.hand):

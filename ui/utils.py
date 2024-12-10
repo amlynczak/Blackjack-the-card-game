@@ -108,6 +108,8 @@ def display_game_state(screen, main_player, dealer, bot_players, counting_prohib
                 display_hand_bot(hand, x, y, screen, False)
         
         if players_turn:
+            suggested_action = main_player.suggest_action(dealer.hand[0])
+            draw_text(suggested_action, WHITE, screen, 120, 100)
             if main_player.can_hit(main_player.hand_id):
                 draw_button("Hit", WHITE, screen, 20, screen.get_height()-120, 100, 50)
             if main_player.can_stand():

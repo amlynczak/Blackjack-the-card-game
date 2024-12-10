@@ -132,6 +132,38 @@ class Player:
             self.money += self.hands[self.hand_id].bet / 2
             self.has_surrenderred = True
         return False
+    
+    def suggest_action(self, dealers_card):
+        hand_value = self.get_hand_value()
+        rank_to_num = {'2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '10': 9, 'J': 10, 'Q': 11, 'K': 12, 'A': 13}
+        dealer_card_rank = dealers_card.rank
+        dealers_card_num = rank_to_num[dealer_card_rank]
+        suggested_action = 'U'
+
+        if self.hands[self.hand_id].cards[0].rank == self.hands[self.hand_id].cards[1].rank and len(self.hands[self.hand_id].cards) == 2:
+            file_path = os.path.join(os.path.dirname(__file__), "../assets/basic_strategy/pairs")
+        elif 'A' in [card.rank for card in self.hands[self.hand_id].cards] and len(self.hands[self.hand_id].cards) == 2:
+            non_ace_card = [card for card in self.hands[self.hand_id].cards if card.rank != 'A'][0]
+            file_path = os.path.join(os.path.dirname(__file__), "../assets/basic_strategy/pairs_with_aces")
+        else:
+            file_path = os.path.join(os.path.dirname(__file__), "../assets/basic_strategy/points")
+
+        with open(file_path, 'r') as file:
+                for line in file:
+                    if line.startswith(self.hands[self.hand_id].cards[0].rank):
+                        suggested_action = line.split()[dealers_card_num]
+                        break
+        
+        if suggested_action == 'H':
+            suggested_action = 'hit'
+        elif suggested_action == 'S':
+            suggested_action = 'stand'
+        elif suggested_action == 'P':
+            suggested_action = 'split'
+        elif suggested_action == 'D':
+            suggested_action = 'double down'
+
+        return suggested_action
 
     def __str__(self):
         '''Returns the player's name and hand'''

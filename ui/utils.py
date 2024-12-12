@@ -96,8 +96,12 @@ def display_game_state(screen, main_player, dealer, bot_players, counting_prohib
                 display_hand_bot(hand, x, y, screen, False)
         
         if players_turn:
-            suggested_action = main_player.suggest_action(dealer.hand[0])
-            draw_text(suggested_action, WHITE, screen, 120, 100)
+            suggested_action = main_player.suggest_action(dealer.hand)
+            rect_width, rect_height = 300, 50
+            rect_x = screen.get_width() - rect_width - 10
+            rect_y = screen.get_height() - rect_height - 10
+            pygame.draw.rect(screen, (50, 50, 50), (rect_x, rect_y, rect_width, rect_height))
+            draw_text(f"Sugerowana akcja: {suggested_action}", WHITE, screen, rect_x + 10, rect_y + 10)
             if main_player.can_hit(main_player.hand_id):
                 draw_button("Hit", WHITE, screen, 20, screen.get_height()-120, 100, 50)
             if main_player.can_stand():

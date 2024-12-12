@@ -128,7 +128,6 @@ class CountingBot(Bot):
         else:
             return bet
 
-
     def update_count(self, card):
         '''Updates the count based on the card'''
         self.counter.update_count(card)

@@ -47,14 +47,14 @@ class BlackjackGame:
     def start_new_round(self):
         while True:
             self.screen.fill(GREEN)
-            draw_text(f"Balance: {self.main_player.money} AGH-coins", WHITE, self.screen, 350, 200)
-            draw_text("How much do you want to bet?", WHITE, self.screen, 350, 250)
-            bet_amounts = [5, 10, 20, 50, 100]
+            draw_text(f"Twoje saldo: {self.main_player.money} WFiIS żetonów", WHITE, self.screen, 350, 200)
+            draw_text("Jaką stawkę chcesz postawić?", WHITE, self.screen, 350, 250)
+            bet_amounts = [10, 20, 50, 100, 200]
             x = 350
             for amount in bet_amounts:
                 draw_button(f"{amount}", WHITE, self.screen, x, 350, 100, 50)
                 x += 150
-            draw_button("Leave Table", WHITE, self.screen, 350, 450, 200, 50)
+            draw_button("Opuść stół", WHITE, self.screen, 350, 450, 200, 50)
             pygame.display.flip()
             bet = None
             while bet is None:
@@ -70,20 +70,19 @@ class BlackjackGame:
                         if x > 350 and x < 550 and y > 450 and y < 500:
                             bet = 'leave'
             if bet == 'leave':
-                #break
                 return False
             elif self.main_player.can_play(bet):
                 self.main_player.reset_hand(bet)
                 break
             else:
-                print("You don't have enough money to place that bet.")
+                print("Nie masz wystarczająco żetonów na koncie.")
             
         for bot in self.bot_players[:]:
             if bot.can_play(self.standard_bet):
                 bet = bot.decide_bet(self.standard_bet)
                 bot.reset_hand(bet)
             else:
-                print(f"{bot.name} doesn't have enough money to play.")
+                print(f"{bot.name} nie ma wystarczająco żetonów na koncie.")
                 self.bot_players.remove(bot)
 
         self.dealer.reset_hand()
@@ -140,41 +139,41 @@ class BlackjackGame:
         for player in players:
             for hand in player.hands:
                 if player.has_surrenderred:
-                    results.append(f"{hand.name}: Surrendered!")
+                    results.append(f"{hand.name} poddał się")
                     continue
                 if hand.isBlackjack:
                     if dealer_value == 21 and len(self.dealer.hand) == 2:
-                        results.append(f"{hand.name}: Draw!")
+                        results.append(f"{hand.name}: remis")
                         player.money += hand.bet
                     else:
-                        results.append(f"{hand.name} won!")
+                        results.append(f"{hand.name} wygrał - Blackjack!")
                         player.money += hand.bet * 2.5
                     continue
                 hand_value = hand.get_hand_value()
                 if hand_value > 21:
-                    results.append(f"{hand.name}: Dealer won!")
+                    results.append(f"{hand.name}: Dealer wygrał!")
                 elif dealer_value > 21:
-                    results.append(f"{hand.name} won!")
+                    results.append(f"{hand.name} wygrał!")
                     player.money += hand.bet * 2
                 elif hand_value == 21 and dealer_value == 21 and len(self.dealer.hand) == 2:
-                    results.append(f"{hand.name}: Dealer won!")
+                    results.append(f"{hand.name}: Dealer wygrał!")
                 elif hand_value > dealer_value:
-                    results.append(f"{hand.name} won!")
+                    results.append(f"{hand.name} wygrał!")
                     player.money += hand.bet * 2
                 elif dealer_value > hand_value:
-                    results.append(f"{hand.name}: Dealer won!")
+                    results.append(f"{hand.name}: Dealer wygrał!")
                 else:
-                    results.append(f"{hand.name}: Draw!")
+                    results.append(f"{hand.name}: remis")
                     player.money += hand.bet
 
             if dealer_value == 21 and len(self.dealer.hand) == 2 and player.is_insured:
-                results.append(f"{player.name}: Insurance won!")
+                results.append(f"{player.name}: Ubezpieczenie zadziałało!")
                 player.money += player.insurance_bet * 2
             elif dealer_value != 21 and len(self.dealer.hand) == 2 and player.is_insured:
-                results.append(f"{player.name}: Insurance lost!")
+                results.append(f"{player.name}: Ubezpieczenie stracone")
             
         self.screen.fill(GREEN)
-        draw_text("Results", WHITE, self.screen, 450, 50)
+        draw_text("Wyniki rundy", WHITE, self.screen, 450, 50)
         y = 100
         for result in results:
             draw_text(result, WHITE, self.screen, 450, y)
@@ -224,7 +223,6 @@ class BlackjackGame:
                         bot.insurance(self.dealer.hand)
                 bot.hand_id += 1
         
-        # Main player turn
         print("player's turn")
         while self.main_player.hand_id < len(self.main_player.hands):
             while True and self.main_player.hands[self.main_player.hand_id].isBlackjack == False:
@@ -255,7 +253,6 @@ class BlackjackGame:
                     break
             self.main_player.hand_id += 1
 
-        # Bot players turn
         for bot in self.bot_players[self.players_turn:]:
             while bot.hand_id < len(bot.hands):
                 while True and bot.hands[bot.hand_id].isBlackjack == False:

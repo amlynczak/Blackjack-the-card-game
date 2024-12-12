@@ -12,9 +12,6 @@ os.environ['SDL_VIDEO_CENTERED'] = '1'
 class StartScreen:
     def __init__(self):
         pygame.init()
-        #pygame.mixer.init()  # Initialize the mixer module
-        #pygame.mixer.music.load('assets/music/FLOWERS.mp3')  # Load the music file
-        #pygame.mixer.music.play(-1)  # Play the music in a loop
         self.screen = pygame.display.set_mode((800, 600))
         pygame.display.set_caption("♣♦♥♠ Blackjack game ♣♦♥♠")
         self.clock = pygame.time.Clock()
@@ -39,7 +36,7 @@ class StartScreen:
 
             self.screen.fill((0, 0, 0))
 
-            draw_text('Blackjack playing app', (255, 255, 255), self.screen, 225, 50)
+            draw_text('Blackjack - gra karciana', (255, 255, 255), self.screen, 225, 50)
 
             draw_button('Rozpocznij grę', (255, 255, 255), self.screen, 300, 200, 200, 50)
             draw_button('Zasady gry', (255, 255, 255), self.screen, 300, 300, 200, 50)

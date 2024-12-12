@@ -46,7 +46,6 @@ class BlackjackGame:
 
     def start_new_round(self):
         while True:
-
             self.screen.fill(GREEN)
             draw_text(f"Balance: {self.main_player.money} AGH-coins", WHITE, self.screen, 350, 200)
             draw_text("How much do you want to bet?", WHITE, self.screen, 350, 250)
@@ -71,7 +70,8 @@ class BlackjackGame:
                         if x > 350 and x < 550 and y > 450 and y < 500:
                             bet = 'leave'
             if bet == 'leave':
-                break
+                #break
+                return False
             elif self.main_player.can_play(bet):
                 self.main_player.reset_hand(bet)
                 break
@@ -129,6 +129,8 @@ class BlackjackGame:
 
         display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited)
 
+        return True
+
 
     def check_winner(self):
         dealer_value = self.dealer.get_hand_value()
@@ -183,7 +185,9 @@ class BlackjackGame:
     
     def play_round(self):
         """Plays a game of blackjack"""
-        self.start_new_round()
+        play_on = self.start_new_round()
+        if not play_on:
+            return False
         
         for bot in self.bot_players[:self.players_turn]:
             while bot.hand_id < len(bot.hands):
@@ -304,36 +308,12 @@ class BlackjackGame:
             else:
                 print(f"AGH-coins balance for {bot.name}: {bot.money}")  
 
+        return True
+
     def play(self):
-        while True:
-            self.play_round()
-            self.screen.fill(GREEN)
-            draw_text(f"Balance: {self.main_player.money} AGH-coins", WHITE, self.screen, 350, 200)
-            draw_text("How much do you want to bet?", WHITE, self.screen, 350, 250)
-            bet_amounts = [5, 10, 20, 50, 100]
-            x = 350
-            for amount in bet_amounts:
-                draw_button(f"{amount}", WHITE, self.screen, x, 350, 100, 50)
-                x += 150
-            draw_button("Leave Table", WHITE, self.screen, 350, 450, 200, 50)
-            pygame.display.flip()
-            bet = None
-            while bet is None:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
-                        sys.exit()
-                    elif event.type == pygame.MOUSEBUTTONDOWN:
-                        x, y = pygame.mouse.get_pos()
-                        for i, amount in enumerate(bet_amounts):
-                            if x > 350 + i * 150 and x < 450 + i * 150 and y > 350 and y < 400:
-                                bet = amount
-                        if x > 350 and x < 550 and y > 450 and y < 500:
-                            bet = 'leave'
-            if bet == 'leave':
-                break
-            else:
-                self.start_new_round()
+        play_on = True
+        while play_on:
+            play_on = self.play_round()
 
     def get_player_action(self):
         while True:

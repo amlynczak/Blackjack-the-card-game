@@ -11,7 +11,7 @@ YELLOW = (255, 255, 0)
 DARK_BLUE = (0, 0, 255)
 CARD_WIDTH, CARD_HEIGHT = 60, 90
 
-font = pygame.font.Font(None, 36)
+font = pygame.font.SysFont('courier new', 17)
 
 card_images = {}
 card_images_bots = {}
@@ -51,18 +51,6 @@ def draw_background(screen, counting_prohibited=True):
         screen.fill(GREEN)
     else:
         screen.fill(DARK_BLUE)
-    #circle_center = (screen.get_width()//2, 0)
-    #radius = 200
-    #texts = ["BLACKJACK PAY 3 TO 2", "DEALER MUST HIT ON SOFT 17", "INSURANCE PAYS 2 TO 1"]
-    #pygame.draw.circle(screen, WHITE, circle_center, radius, 5)
-    #start_angle = 180
-    #angle_step = 360 // len(texts)
-    #for i, text in enumerate(texts):
-    #    angle = start_angle + i * angle_step
-    #    x = circle_center[0] + int(radius * math.cos(math.radians(angle)))
-    #    y = circle_center[1] + int(radius * math.sin(math.radians(angle)))
-    #    text_angle = -angle
-    #    draw_text_rotated(text, pygame.font.Font(None, 36), WHITE, screen, x, y, angle)
     pygame.display.flip()
 
 
@@ -108,6 +96,8 @@ def display_game_state(screen, main_player, dealer, bot_players, counting_prohib
                 display_hand_bot(hand, x, y, screen, False)
         
         if players_turn:
+            suggested_action = main_player.suggest_action(dealer.hand[0])
+            draw_text(suggested_action, WHITE, screen, 120, 100)
             if main_player.can_hit(main_player.hand_id):
                 draw_button("Hit", WHITE, screen, 20, screen.get_height()-120, 100, 50)
             if main_player.can_stand():

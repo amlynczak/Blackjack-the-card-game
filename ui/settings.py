@@ -18,19 +18,17 @@ def settings(screen):
     settings = {
         'number_of_decks': 1,
         'number_of_players': 1,
-        'language': 'English',
         'counting_method': 'halves'
     }
 
     options = {
         'number_of_decks': [1, 2, 4, 6, 8],
         'number_of_players': [1, 2, 3, 4, 5, 6, 7],
-        'language': ['English', 'Polski'],
         'counting_method': ['halves', 'high_low', 'high_optI', 'high_optII', 'ko', 'omega', 'red_seven', 'ten_count', 'zen_count']
     }
 
-    input_boxes = [pygame.Rect(200, 100, 400, 50), pygame.Rect(200, 200, 400, 50), pygame.Rect(200, 300, 400, 50), pygame.Rect(200, 400, 400, 50)]
-    input_texts = ['Number of decks', 'Number of players', 'Language', 'Counting method']
+    input_boxes = [pygame.Rect(200, 100, 400, 50), pygame.Rect(200, 200, 400, 50), pygame.Rect(200, 300, 400, 50)]
+    input_texts = ['Liczba talii kart', 'Liczba graczy przy stole', 'Metoda liczenia kart']
 
     while True:
         for event in pygame.event.get():
@@ -49,7 +47,7 @@ def settings(screen):
                         settings[key] = options[key][(current_index + 1) % len(options[key])]
 
         screen.fill((0, 0, 0))
-        draw_button('Save', (255, 255, 255), screen, 300, 500, 200, 50)
+        draw_button('Zapisz', (255, 255, 255), screen, 300, 500, 200, 50)
 
         for i, box in enumerate(input_boxes):
             pygame.draw.rect(screen, (255, 255, 255), box)

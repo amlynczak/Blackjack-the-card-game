@@ -13,7 +13,7 @@ class Card:
         if self.rank in ['J', 'Q', 'K']:
             return 10
         elif self.rank == 'A':
-            return 11 #Ace can have value of 1, but we will handle that later
+            return 11
         else:
             return int(self.rank)
         

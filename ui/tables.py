@@ -10,7 +10,7 @@ os.environ['SDL_VIDEO_CENTERED'] = '1'
 
 def choose_table(screen):
     screen.fill((0, 0, 0))
-    pygame.display.set_caption("Choose table")
+    pygame.display.set_caption("Wybierz stół")
 
     button_font = pygame.font.SysFont(None, 35)
     clock = pygame.time.Clock()
@@ -34,7 +34,7 @@ def choose_table(screen):
                     game.play()
                     screen = pygame.display.set_mode((800, 600))
                     screen.fill((0, 0, 0))
-                    pygame.display.set_caption("Choose table")
+                    pygame.display.set_caption("Wybierz stół")
                 elif rect2.collidepoint(event.pos):
                     num_of_players = json.loads(open("assets/settings.json").read())["number_of_players"]
                     num_of_decks = json.loads(open("assets/settings.json").read())["number_of_decks"]
@@ -42,19 +42,19 @@ def choose_table(screen):
                     game.play()
                     screen = pygame.display.set_mode((800, 600))
                     screen.fill((0, 0, 0))
-                    pygame.display.set_caption("Choose table")
+                    pygame.display.set_caption("Wybierz stół")
                 elif back_button_rect.collidepoint(event.pos):
-                    return  # Return to the starting screen
+                    return
 
         pygame.draw.rect(screen, (34, 139, 34), rect1)
-        draw_text('Table 1', (255, 255, 255), screen, 150, 50)
-        draw_text('bots are playing with', (255, 255, 255), screen, 100, 400)
-        draw_text('base strategy', (255,255,255), screen, 150, 430)
+        draw_text('Stół 1', (255, 255, 255), screen, 150, 50)
+        draw_text('Boty grają według', (255, 255, 255), screen, 100, 400)
+        draw_text('strategii podstawowej', (255,255,255), screen, 150, 430)
         pygame.draw.rect(screen, (0, 0, 255), rect2)
-        draw_text('Table 2', (255, 255, 255), screen, 500, 50)
-        draw_text('bots are counting cards', (255, 255, 255), screen, 450, 400)
+        draw_text('Stół 2', (255, 255, 255), screen, 500, 50)
+        draw_text('Boty liczą karty', (255, 255, 255), screen, 450, 400)
         pygame.draw.rect(screen, (255, 0, 0), back_button_rect)
-        draw_text('Back', (255, 255, 255), screen, 375, 515)
+        draw_text('Powrót', (255, 255, 255), screen, 375, 515)
 
         pygame.display.flip()
         clock.tick(60)

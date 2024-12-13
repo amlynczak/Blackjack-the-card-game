@@ -118,6 +118,7 @@ class CountingBot(Bot):
     def decide_bet(self, standard_bet):
         true_count = self.counter.get_count()
         file_path = os.path.join(os.path.dirname(__file__), "../assets/counting_cards/casino_adv")
+        bet = standard_bet
         with open(file_path, 'r') as file:
             for line in file:
                 if line.startswith(str(int(true_count))):

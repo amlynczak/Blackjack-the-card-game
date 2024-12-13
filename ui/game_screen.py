@@ -105,10 +105,11 @@ class BlackjackGame:
                 else:
                     bot.add_card(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]))
 
-            if (self.counting_prohibited):        
-                self.dealer.add_card(self.deck.deal_card())
+            if (not self.counting_prohibited and i == 0):
+                self.dealer.add_card(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]))        
             else:
-                self.dealer.add_card(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]))
+                self.dealer.add_card(self.deck.deal_card())
+                
             
         if self.main_player.get_hand_value() == 21:
             print("♣♦♥♠ Blackjack! ♣♦♥♠")

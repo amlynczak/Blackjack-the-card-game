@@ -94,6 +94,16 @@ def display_game_state(screen, main_player, dealer, bot_players, counting_prohib
                 x = center_x_left_side + int(radius * math.cos(math.radians(angle)))
                 y = center_y + int(radius * math.sin(math.radians(angle)))
                 display_hand_bot(hand, x, y, screen, False)
+
+        if not counting_prohibited:
+            running_count = main_player.get_running_count()
+            true_count = main_player.get_true_count()
+            x = screen.get_width()/2 - 100
+            y = screen.get_height() - 60
+
+            pygame.draw.rect(screen, (50, 50, 50), (x, y, 200, 50))
+            draw_text(f"running count: {running_count}", WHITE, screen, x+10, y+5)
+            draw_text(f"true count: {true_count}", WHITE, screen, x+10, y+25)
         
         if players_turn:
             suggested_action = main_player.suggest_action(dealer.hand)

@@ -290,6 +290,12 @@ class Player:
         '''Updates the count based on the card'''
         self.counter.update_count(card)
 
+    def get_running_count(self):
+        return self.counter.get_running_count()
+    
+    def get_true_count(self):
+        return self.counter.get_count()
+
     def __str__(self):
         '''Returns the player's name and hand'''
         hand_str = ', '.join(str(card) for card in self.hands[self.hand_id].cards)

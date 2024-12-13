@@ -8,6 +8,17 @@ def save_settings(settings):
     with open('assets/settings.json', 'w') as f:
         json.dump(settings, f)
 
+def load_settings():
+    try:
+        with open('assets/settings.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {
+            'number_of_decks': 1,
+            'number_of_players': 1,
+            'counting_method': 'halves'
+        }
+
 def settings(screen):
     screen.fill((0, 0, 0))
     pygame.display.set_caption("Settings")
@@ -15,11 +26,7 @@ def settings(screen):
     button_font = pygame.font.SysFont(None, 35)
     clock = pygame.time.Clock()
 
-    settings = {
-        'number_of_decks': 1,
-        'number_of_players': 1,
-        'counting_method': 'halves'
-    }
+    settings = load_settings()
 
     options = {
         'number_of_decks': [1, 2, 4, 6, 8],

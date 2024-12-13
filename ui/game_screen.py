@@ -92,23 +92,24 @@ class BlackjackGame:
                 if (self.counting_prohibited):
                     bot.add_card(self.deck.deal_card())
                 else:
-                    bot.add_card(self.deck.deal_card_and_update_counts(self.bot_players))
+                    bot.add_card(self.deck.deal_card_and_update_counts(self.bot_players+ [self.main_player]))
 
             if (self.counting_prohibited):
                 self.main_player.add_card(self.deck.deal_card())
             else:
-                self.main_player.add_card(self.deck.deal_card_and_update_counts(self.bot_players))
+                self.main_player.add_card(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]))
             
             for bot in self.bot_players[self.players_turn: len(self.bot_players)]:
                 if (self.counting_prohibited):
                     bot.add_card(self.deck.deal_card())
                 else:
-                    bot.add_card(self.deck.deal_card_and_update_counts(self.bot_players))
+                    bot.add_card(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]))
 
-            if (self.counting_prohibited):        
-                self.dealer.add_card(self.deck.deal_card())
+            if (not self.counting_prohibited and i == 0):
+                self.dealer.add_card(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]))        
             else:
-                self.dealer.add_card(self.deck.deal_card_and_update_counts(self.bot_players))
+                self.dealer.add_card(self.deck.deal_card())
+                
             
         if self.main_player.get_hand_value() == 21:
             print("♣♦♥♠ Blackjack! ♣♦♥♠")
@@ -198,20 +199,20 @@ class BlackjackGame:
                         print(f"{bot.name} hits")
                         if self.counting_prohibited and not bot.hit(self.deck.deal_card(), bot.hand_id):
                             break
-                        elif not self.counting_prohibited and not bot.hit(self.deck.deal_card_and_update_counts(self.bot_players), bot.hand_id):
+                        elif not self.counting_prohibited and not bot.hit(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]), bot.hand_id):
                             break
                     elif action == 'double' and bot.can_double_down():
                         print(f"{bot.name} doubles down")
                         if self.counting_prohibited and not bot.double_down(self.deck.deal_card(), bot.hand_id):
                             break
-                        elif not self.counting_prohibited and not bot.double_down(self.deck.deal_card_and_update_counts(self.bot_players), bot.hand_id):
+                        elif not self.counting_prohibited and not bot.double_down(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]), bot.hand_id):
                             break
                     elif action == 'split' and bot.can_split():
                         print(f"{bot.name} splits")
                         if self.counting_prohibited:
                             bot.split(self.deck.deal_card(), self.deck.deal_card())
                         else:
-                            bot.split(self.deck.deal_card_and_update_counts(self.bot_players), self.deck.deal_card_and_update_counts(self.bot_players))
+                            bot.split(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]), self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]))
                     elif action == 'stand' and bot.can_stand():
                         print(f"{bot.name} stands")
                         display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited)
@@ -231,18 +232,18 @@ class BlackjackGame:
                 if action == 'hit' and self.main_player.can_hit():
                     if self.counting_prohibited and not self.main_player.hit(self.deck.deal_card(), self.main_player.hand_id):
                         break
-                    elif not self.counting_prohibited and not self.main_player.hit(self.deck.deal_card_and_update_counts(self.bot_players), self.main_player.hand_id):
+                    elif not self.counting_prohibited and not self.main_player.hit(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]), self.main_player.hand_id):
                         break
                 elif action == 'double' and self.main_player.can_double_down():
                     if self.counting_prohibited and not self.main_player.double_down(self.deck.deal_card(), self.main_player.hand_id):
                         break
-                    elif not self.counting_prohibited and not self.main_player.double_down(self.deck.deal_card_and_update_counts(self.bot_players), self.main_player.hand_id):
+                    elif not self.counting_prohibited and not self.main_player.double_down(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]), self.main_player.hand_id):
                         break
                 elif action == 'split' and self.main_player.can_split():
                     if self.counting_prohibited:
                         self.main_player.split(self.deck.deal_card(), self.deck.deal_card())
                     else:
-                        self.main_player.split(self.deck.deal_card_and_update_counts(self.bot_players), self.deck.deal_card_and_update_counts(self.bot_players))
+                        self.main_player.split(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]), self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]))
                 elif action == 'insurance' and self.main_player.can_insurance(self.dealer.hand):
                     self.main_player.insurance(self.dealer.hand)
                 elif action == 'surrender' and self.main_player.can_surrender():
@@ -263,20 +264,20 @@ class BlackjackGame:
                         print(f"{bot.name} hits")
                         if self.counting_prohibited and not bot.hit(self.deck.deal_card(), bot.hand_id):
                             break
-                        elif not self.counting_prohibited and not bot.hit(self.deck.deal_card_and_update_counts(self.bot_players), bot.hand_id):
+                        elif not self.counting_prohibited and not bot.hit(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]), bot.hand_id):
                             break
                     elif action == 'double' and bot.can_double_down():
                         print(f"{bot.name} doubles down")
                         if self.counting_prohibited and not bot.double_down(self.deck.deal_card(), bot.hand_id):
                             break
-                        elif not self.counting_prohibited and not bot.double_down(self.deck.deal_card_and_update_counts(self.bot_players), bot.hand_id):
+                        elif not self.counting_prohibited and not bot.double_down(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]), bot.hand_id):
                             break
                     elif action == 'split' and bot.can_split():
                         print(f"{bot.name} splits")
                         if self.counting_prohibited:
                             bot.split(self.deck.deal_card(), self.deck.deal_card())
                         else:
-                            bot.split(self.deck.deal_card_and_update_counts(self.bot_players), self.deck.deal_card_and_update_counts(self.bot_players))
+                            bot.split(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]), self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]))
                     elif action == 'stand' and bot.can_stand():
                         print(f"{bot.name} stands")
                         display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited)

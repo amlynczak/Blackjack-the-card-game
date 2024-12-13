@@ -94,22 +94,51 @@ def display_game_state(screen, main_player, dealer, bot_players, counting_prohib
                 x = center_x_left_side + int(radius * math.cos(math.radians(angle)))
                 y = center_y + int(radius * math.sin(math.radians(angle)))
                 display_hand_bot(hand, x, y, screen, False)
+
+        if not counting_prohibited:
+            running_count = main_player.get_running_count()
+            true_count = main_player.get_true_count()
+            x = screen.get_width()/2 - 100
+            y = screen.get_height() - 60
+
+            pygame.draw.rect(screen, (50, 50, 50), (x, y, 200, 50))
+            draw_text(f"running count: {running_count}", WHITE, screen, x+10, y+5)
+            draw_text(f"true count: {true_count}", WHITE, screen, x+10, y+25)
         
         if players_turn:
-            suggested_action = main_player.suggest_action(dealer.hand[0])
-            draw_text(suggested_action, WHITE, screen, 120, 100)
+            suggested_action = main_player.suggest_action(dealer.hand)
+            rect_width, rect_height = 300, 50
+            rect_x = screen.get_width() - rect_width - 10
+            rect_y = screen.get_height() - rect_height - 10
+            pygame.draw.rect(screen, (50, 50, 50), (rect_x, rect_y, rect_width, rect_height))
+            draw_text(f"Sugerowana akcja: {suggested_action}", WHITE, screen, rect_x + 10, rect_y + 10)
+
             if main_player.can_hit(main_player.hand_id):
-                draw_button("Hit", WHITE, screen, 20, screen.get_height()-120, 100, 50)
+                draw_button("HIT", WHITE, screen, 20, screen.get_height()-120, 100, 50)
+            else:
+                pygame.draw.rect(screen, (100, 100, 100), (20, screen.get_height()-120, 100, 50))
+
             if main_player.can_stand():
-                draw_button("Stand", WHITE, screen, 20, screen.get_height()-60, 100, 50)
+                draw_button("STAND", WHITE, screen, 20, screen.get_height()-60, 100, 50)
+            else:
+                pygame.draw.rect(screen, (100, 100, 100), (20, screen.get_height()-60, 100, 50))
+
             if main_player.can_double_down(main_player.hand_id):
-                draw_button("Double", WHITE, screen, 130, screen.get_height()-120, 100, 50)
+                draw_button("DOUBLE", WHITE, screen, 130, screen.get_height()-120, 100, 50)
+            else:
+                pygame.draw.rect(screen, (100, 100, 100), (130, screen.get_height()-120, 100, 50))
             if main_player.can_split():
-                draw_button("Split", WHITE, screen, 130, screen.get_height()-60, 100, 50)
+                draw_button("SPLIT", WHITE, screen, 130, screen.get_height()-60, 100, 50)
+            else:
+                pygame.draw.rect(screen, (100, 100, 100), (130, screen.get_height()-60, 100, 50))
             if main_player.can_insurance(dealer.hand):
-                draw_button("Insurance", WHITE, screen, 240, screen.get_height()-120, 100, 50)
+                draw_button("INSURANCE", WHITE, screen, 240, screen.get_height()-120, 100, 50)
+            else:
+                pygame.draw.rect(screen, (100, 100, 100), (240, screen.get_height()-120, 100, 50))
             if main_player.can_surrender():
-                draw_button("Surrender", WHITE, screen, 240, screen.get_height()-60, 100, 50)
+                draw_button("SURRENDER", WHITE, screen, 240, screen.get_height()-60, 100, 50)
+            else:
+                pygame.draw.rect(screen, (100, 100, 100), (240, screen.get_height()-60, 100, 50))
         pygame.display.flip()
 
 def display_hand(hand, x, y, screen):

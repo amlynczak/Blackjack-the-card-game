@@ -133,37 +133,168 @@ class Player:
             self.has_surrenderred = True
         return False
     
-    def suggest_action(self, dealers_card):
-        hand_value = self.get_hand_value()
+    def decide_action(self, dealer_hand):
+        '''Decides the action to take based on the dealer's hand'''
+        hand_value = self.get_hand_value(self.hand_id)
         rank_to_num = {'2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '10': 9, 'J': 10, 'Q': 11, 'K': 12, 'A': 13}
-        dealer_card_rank = dealers_card.rank
-        dealers_card_num = rank_to_num[dealer_card_rank]
-        suggested_action = 'U'
+        
+        dealer_card_rank = dealer_hand[0].rank
+        dealer_card_num = rank_to_num[dealer_card_rank]
+        action = 'U' #unknown
 
-        if self.hands[self.hand_id].cards[0].rank == self.hands[self.hand_id].cards[1].rank and len(self.hands[self.hand_id].cards) == 2:
+        if self.hands[self.hand_id].cards[0].rank ==  self.hands[self.hand_id].cards[1].rank and len(self.hands[self.hand_id].cards) == 2:
             file_path = os.path.join(os.path.dirname(__file__), "../assets/basic_strategy/pairs")
+            with open(file_path, 'r') as file:
+                for line in file:
+                    if line.startswith(self.hands[self.hand_id].cards[0].rank):
+                        action = line.split()[dealer_card_num]
+                        print("split in bot, action: ", action)
+                        if self.can_split() and action == 'P':
+                            break
+                        elif action == 'H' or action == 'S' or action == 'D':
+                            break
         elif 'A' in [card.rank for card in self.hands[self.hand_id].cards] and len(self.hands[self.hand_id].cards) == 2:
             non_ace_card = [card for card in self.hands[self.hand_id].cards if card.rank != 'A'][0]
             file_path = os.path.join(os.path.dirname(__file__), "../assets/basic_strategy/pairs_with_aces")
+            with open(file_path, 'r') as file:
+                for line in file:
+                    if line.startswith(non_ace_card.rank):
+                        action = line.split()[dealer_card_num]
+                        break
         else:
             file_path = os.path.join(os.path.dirname(__file__), "../assets/basic_strategy/points")
+            with open(file_path, 'r') as file:
+                for line in file:
+                    if line.startswith(str(hand_value)):
+                        action = line.split()[dealer_card_num]
+                        if action == 'D' and not self.can_double_down():
+                            action = 'H'
+                        break
 
-        with open(file_path, 'r') as file:
+        return action
+
+    def decide_action_based_on_count(self, dealers_hand):
+        '''Decides whether to hit or stand based on the count'''
+        action = self.decide_action(dealers_hand)
+
+        hand_value = self.get_hand_value(self.hand_id)
+        rank_to_num = {'2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '10': 9, 'J': 10, 'Q': 11, 'K': 12, 'A': 13}
+        
+        dealer_card_rank = dealers_hand[0].rank
+        dealer_card_num = rank_to_num[dealer_card_rank]
+
+        action_tmp = 'U' #unknown
+
+        if self.hands[self.hand_id].cards[0].rank == self.hands[self.hand_id].cards[1].rank and len(self.hands[self.hand_id].cards) == 2:
+            file_path = os.path.join(os.path.dirname(__file__), "../assets/counting_cards/pairs")
+            with open(file_path, 'r') as file:
                 for line in file:
                     if line.startswith(self.hands[self.hand_id].cards[0].rank):
-                        suggested_action = line.split()[dealers_card_num]
+                        action_tmp = line.split()[dealer_card_num]
+                        print("split deciding")
                         break
-        
-        if suggested_action == 'H':
-            suggested_action = 'hit'
-        elif suggested_action == 'S':
-            suggested_action = 'stand'
-        elif suggested_action == 'P':
-            suggested_action = 'split'
-        elif suggested_action == 'D':
-            suggested_action = 'double down'
+        elif 'A' in [card.rank for card in self.hands[self.hand_id].cards] and len(self.hands[self.hand_id].cards) == 2:
+            file_path = os.path.join(os.path.dirname(__file__), "../assets/counting_cards/pairs_with_aces")
+            with open(file_path, 'r') as file:
+                for line in file:
+                    if line.startswith(self.hands[self.hand_id].cards[0].rank):
+                        action_tmp = line.split()[dealer_card_num]
+                        print("ace deciding")
+                        break
+        else:
+            file_path = os.path.join(os.path.dirname(__file__), "../assets/counting_cards/points")
+            with open(file_path, 'r') as file:
+                for line in file:
+                    if line.startswith(str(hand_value)):
+                        action_tmp = line.split()[dealer_card_num]
+                        print("point deciding")
+                        break
 
-        return suggested_action
+        print(action)
+        print(action_tmp)
+        
+        true_count = self.counter.get_count()
+        print(true_count)
+
+        if action != action_tmp:
+            if action_tmp[0] == '+':
+                true_count_threshold = int(action_tmp[1:])
+                if true_count >= true_count_threshold:
+                    print("more aggressive")
+                    return f'{action}/{self.more_aggressive(action)}'
+            elif action_tmp[0] == '-':
+                true_count_threshold = int(action_tmp[1:])
+                if true_count <= ((-1) * true_count_threshold):
+                    print("play safe")
+                    return f'{action}/{self.play_safe(action)}'
+
+        if action == 'H':
+            return 'hit'
+        elif action == 'S':
+            return 'stand'
+        elif action == 'D':
+            return 'double'
+        elif action == 'P':
+            return 'split'
+
+    def more_aggressive(self, action):
+        if action == 'H':
+            return 'D' if self.can_double_down() else 'H'
+        elif action == 'S':
+            return 'H'
+        elif action == 'P':
+            return 'P'
+        elif action == 'D':
+            return 'D'
+        
+    def play_safe(self, action):
+        if action == 'H':
+            return 'S'
+        elif action == 'S':
+            return 'S'
+        elif action == 'D':
+            return 'H'
+        elif action == 'P':
+            return 'H'
+
+    def suggest_action(self, dealer_hand, counting=False):
+        '''Suggests the action to take based on the dealer's hand'''
+        if counting:
+            action = self.decide_action_based_on_count(dealer_hand)
+        else:
+            action = self.decide_action(dealer_hand)
+
+        if action == 'H':
+            return 'HIT'
+        elif action == 'S':
+            return 'STAND'
+        elif action == 'D':
+            return 'DOUBLE DOWN'
+        elif action == 'P':
+            return 'SPLIT'
+        elif action == 'H/D':
+            return 'HIT/DOUBLE DOWN'
+        elif action == 'H/S':
+            return 'HIT/STAND'
+        elif action == 'H/P':
+            return 'HIT/SPLIT'
+        elif action == 'S/D':
+            return 'STAND/DOUBLE DOWN'
+        elif action == 'S/P':
+            return 'STAND/SPLIT'
+        elif action == 'D/P':
+            return 'DOUBLE DOWN/SPLIT'
+        
+
+    def update_count(self, card):
+        '''Updates the count based on the card'''
+        self.counter.update_count(card)
+
+    def get_running_count(self):
+        return self.counter.get_running_count()
+    
+    def get_true_count(self):
+        return self.counter.get_count()
 
     def __str__(self):
         '''Returns the player's name and hand'''

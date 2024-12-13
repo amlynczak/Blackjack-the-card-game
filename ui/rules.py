@@ -19,7 +19,8 @@ def show_rules(screen):
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = event.pos
-                if 300 <= mouse_x <= 500 and 500 <= mouse_y <= 550:
+                if 550 <= mouse_x <= 750 and 500 <= mouse_y <= 550:
+                    screen = pygame.display.set_mode((800, 600))
                     return
 
         screen.fill((0, 0, 0))

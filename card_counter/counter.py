@@ -23,6 +23,9 @@ class Counter(ABC):
         decks_remaining = max(self.num_decks - round(self.cards_dealt / 52), 1)
         self.true_count = self.running_count // decks_remaining
 
+    def get_running_count(self):
+        return self.running_count
+    
     def get_count(self):
         return self.true_count
     

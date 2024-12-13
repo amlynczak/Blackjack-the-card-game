@@ -173,7 +173,7 @@ class Player:
 
         return action
 
-    def decide_action_based_on_count(self, dealer_hand):
+    def decide_action_based_on_count(self, dealers_hand):
         '''Decides whether to hit or stand based on the count'''
         action = self.decide_action(dealers_hand)
 

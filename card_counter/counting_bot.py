@@ -9,7 +9,6 @@ from card_counter.methods.red_seven import Red7Counter
 from card_counter.methods.ten_count import TenCountCounter
 from card_counter.methods.zen_count import ZenCountCounter
 
-
 import os
 import random
 

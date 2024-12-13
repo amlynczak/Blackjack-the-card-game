@@ -102,18 +102,33 @@ def display_game_state(screen, main_player, dealer, bot_players, counting_prohib
             rect_y = screen.get_height() - rect_height - 10
             pygame.draw.rect(screen, (50, 50, 50), (rect_x, rect_y, rect_width, rect_height))
             draw_text(f"Sugerowana akcja: {suggested_action}", WHITE, screen, rect_x + 10, rect_y + 10)
+
             if main_player.can_hit(main_player.hand_id):
-                draw_button("Hit", WHITE, screen, 20, screen.get_height()-120, 100, 50)
+                draw_button("HIT", WHITE, screen, 20, screen.get_height()-120, 100, 50)
+            else:
+                pygame.draw.rect(screen, (100, 100, 100), (20, screen.get_height()-120, 100, 50))
+
             if main_player.can_stand():
-                draw_button("Stand", WHITE, screen, 20, screen.get_height()-60, 100, 50)
+                draw_button("STAND", WHITE, screen, 20, screen.get_height()-60, 100, 50)
+            else:
+                pygame.draw.rect(screen, (100, 100, 100), (20, screen.get_height()-60, 100, 50))
+
             if main_player.can_double_down(main_player.hand_id):
-                draw_button("Double", WHITE, screen, 130, screen.get_height()-120, 100, 50)
+                draw_button("DOUBLE", WHITE, screen, 130, screen.get_height()-120, 100, 50)
+            else:
+                pygame.draw.rect(screen, (100, 100, 100), (130, screen.get_height()-120, 100, 50))
             if main_player.can_split():
-                draw_button("Split", WHITE, screen, 130, screen.get_height()-60, 100, 50)
+                draw_button("SPLIT", WHITE, screen, 130, screen.get_height()-60, 100, 50)
+            else:
+                pygame.draw.rect(screen, (100, 100, 100), (130, screen.get_height()-60, 100, 50))
             if main_player.can_insurance(dealer.hand):
-                draw_button("Insurance", WHITE, screen, 240, screen.get_height()-120, 100, 50)
+                draw_button("INSURANCE", WHITE, screen, 240, screen.get_height()-120, 100, 50)
+            else:
+                pygame.draw.rect(screen, (100, 100, 100), (240, screen.get_height()-120, 100, 50))
             if main_player.can_surrender():
-                draw_button("Surrender", WHITE, screen, 240, screen.get_height()-60, 100, 50)
+                draw_button("SURRENDER", WHITE, screen, 240, screen.get_height()-60, 100, 50)
+            else:
+                pygame.draw.rect(screen, (100, 100, 100), (240, screen.get_height()-60, 100, 50))
         pygame.display.flip()
 
 def display_hand(hand, x, y, screen):

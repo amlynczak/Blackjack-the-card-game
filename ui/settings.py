@@ -47,6 +47,8 @@ def settings(screen):
                 if 300 <= mouse_x <= 500 and 500 <= mouse_y <= 550:
                     save_settings(settings)
                     return input_boxes
+                if 300 <= mouse_x <= 500 and 400 <= mouse_y <= 450:
+                    return input_boxes
                 for i, box in enumerate(input_boxes):
                     if box.collidepoint(mouse_x, mouse_y):
                         key = list(settings.keys())[i]
@@ -54,7 +56,8 @@ def settings(screen):
                         settings[key] = options[key][(current_index + 1) % len(options[key])]
 
         screen.fill((0, 0, 0))
-        draw_button('Zapisz', (255, 255, 255), screen, 300, 500, 200, 50)
+        draw_button('Zapisz', (255, 255, 255), screen, 300, 400, 200, 50)
+        draw_button('Powrót', (255, 255, 255), screen, 300, 500, 200, 50)
 
         for i, box in enumerate(input_boxes):
             pygame.draw.rect(screen, (255, 255, 255), box)

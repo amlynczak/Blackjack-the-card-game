@@ -7,23 +7,31 @@ pygame.init()
 GREEN = (0, 128, 0)
 DARK_GREEN = (0, 100, 0)
 WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-YELLOW = (255, 255, 0)
 CARD_WIDTH, CARD_HEIGHT = 60, 90
 
 font = pygame.font.SysFont('courier new', 17)
 
 card_images = {}
 card_images_bots = {}
-card_images['back'] = pygame.transform.scale(pygame.image.load("assets/images/cards/back.jpg"), (CARD_WIDTH, CARD_HEIGHT))
-card_images_bots['back'] = pygame.transform.scale(pygame.image.load("assets/images/cards/back.jpg"), (CARD_WIDTH * 0.66, CARD_HEIGHT * 0.66))
+border_size = 1
+border_color = (0, 0, 0)
+
+def add_border(image):
+    width, height = image.get_size()
+    bordered_image = pygame.Surface((width + 2 * border_size, height + 2 * border_size))
+    bordered_image.fill((0, 0, 0))
+    bordered_image.blit(image, (border_size, border_size))
+    return bordered_image
+
+card_images['back'] = add_border(pygame.transform.scale(pygame.image.load("assets/images/cards/back.jpg"), (CARD_WIDTH, CARD_HEIGHT)))
+card_images_bots['back'] = add_border(pygame.transform.scale(pygame.image.load("assets/images/cards/back.jpg"), (CARD_WIDTH * 0.66, CARD_HEIGHT * 0.66)))
 for suit in ['spades', 'hearts', 'diamonds', 'clubs']:
     for value in range(2, 11):
-        card_images[f"{value}_of_{suit}"] = pygame.transform.scale(pygame.image.load(f"assets/images/cards/{value}_of_{suit}.png"), (CARD_WIDTH, CARD_HEIGHT))
-        card_images_bots[f"{value}_of_{suit}"] = pygame.transform.scale(pygame.image.load(f"assets/images/cards/{value}_of_{suit}.png"), (CARD_WIDTH * 0.66, CARD_HEIGHT * 0.66))
+        card_images[f"{value}_of_{suit}"] = add_border(pygame.transform.scale(pygame.image.load(f"assets/images/cards/{value}_of_{suit}.png"), (CARD_WIDTH, CARD_HEIGHT)))
+        card_images_bots[f"{value}_of_{suit}"] = add_border(pygame.transform.scale(pygame.image.load(f"assets/images/cards/{value}_of_{suit}.png"), (CARD_WIDTH * 0.66, CARD_HEIGHT * 0.66)))
     for face in ['J', 'Q', 'K', 'A']:
-        card_images[f"{face}_of_{suit}"] = pygame.transform.scale(pygame.image.load(f"assets/images/cards/{face}_of_{suit}.png"), (CARD_WIDTH, CARD_HEIGHT))
-        card_images_bots[f"{face}_of_{suit}"] = pygame.transform.scale(pygame.image.load(f"assets/images/cards/{face}_of_{suit}.png"), (CARD_WIDTH * 0.66, CARD_HEIGHT * 0.66))
+        card_images[f"{face}_of_{suit}"] = add_border(pygame.transform.scale(pygame.image.load(f"assets/images/cards/{face}_of_{suit}.png"), (CARD_WIDTH, CARD_HEIGHT)))
+        card_images_bots[f"{face}_of_{suit}"] = add_border(pygame.transform.scale(pygame.image.load(f"assets/images/cards/{face}_of_{suit}.png"), (CARD_WIDTH * 0.66, CARD_HEIGHT * 0.66)))
 
 chips_images = {}
 for chip in ['10', '20', '50', '100', '200']:
@@ -38,7 +46,9 @@ def draw_text(text, color, surface, x, y):
 
 def draw_button(text, color, surface, x, y, width, height):
     pygame.draw.rect(surface, color, (x, y, width, height))
-    draw_text(text, (0, 0, 0), surface, x + 10, y + 10)
+    textobj = font.render(text, True, (0, 0, 0))
+    textrect = textobj.get_rect(center=(x + width // 2, y + height // 2))
+    surface.blit(textobj, textrect)
 
 def draw_background(screen, counting_prohibited=True):
     if counting_prohibited:
@@ -94,10 +104,10 @@ def display_game_state(screen, main_player, dealer, bot_players, counting_prohib
         if not counting_prohibited:
             running_count = main_player.get_running_count()
             true_count = main_player.get_true_count()
-            x = screen.get_width()/2 - 100
+            x = screen.get_width()/2 - 125
             y = screen.get_height() - 60
 
-            pygame.draw.rect(screen, (50, 50, 50), (x, y, 200, 50))
+            pygame.draw.rect(screen, (50, 50, 50), (x, y, 250, 50))
             draw_text(f"running count: {running_count}", WHITE, screen, x+10, y+5)
             draw_text(f"true count: {true_count}", WHITE, screen, x+10, y+25)
         
@@ -151,7 +161,7 @@ def display_hand(hand, x, y, screen):
     screen.blit(text, (x, y + 100))
     if hand.isBlackjack:
         text = font.render("Blackjack!", True, WHITE)
-        screen.blit(text, (x + 200, y + 100))
+        screen.blit(text, (x + 100, y + 100))
 
 def display_hand_bot(hand, x, y, screen, right_hand_side=True):
     bet = hand.bet
@@ -177,8 +187,12 @@ def display_hand_bot(hand, x, y, screen, right_hand_side=True):
             screen.blit(card_img, (x - j * 20, y - j * 10))
         else:
             screen.blit(card_img, (x + j * 20, y - j * 10))
+
     text = font.render(f"{hand.name}({hand.get_hand_value()})", True, WHITE)
-    screen.blit(text, (x - 20, y + 65))
+    if right_hand_side:
+        screen.blit(text, (x - 70, y + 65))
+    else:
+        screen.blit(text, (x - 10, y + 65))
 
 def display_hand_dealer(dealer, x, y, screen, show_all=False):
     for i, card in enumerate(dealer.hand):
@@ -191,7 +205,7 @@ def display_hand_dealer(dealer, x, y, screen, show_all=False):
     
     if show_all:
         text = font.render(f"Dealer: {dealer.get_hand_value()}", True, WHITE)
-        screen.blit(text, (x, y + 100))
+        screen.blit(text, ((screen.get_width()/2)-30, y + 100))
 
 def display_chips(player, screen):
     y = screen.get_height() - 300

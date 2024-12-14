@@ -13,7 +13,7 @@ from blackjack.bot import Bot
 
 from card_counter.counting_bot import CountingBot
 
-from ui.utils import draw_text, draw_button, display_game_state
+from ui.utils import draw_text, draw_button, display_game_state, draw_background
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 pygame.init()
@@ -46,7 +46,7 @@ class BlackjackGame:
 
     def start_new_round(self):
         while True:
-            self.screen.fill(GREEN)
+            draw_background(self.screen, self.counting_prohibited)
             draw_text(f"Twoje saldo: {self.main_player.money} WFiIS żetonów", WHITE, self.screen, 350, 200)
             draw_text("Jaką stawkę chcesz postawić?", WHITE, self.screen, 350, 250)
             bet_amounts = [10, 20, 50, 100, 200]
@@ -172,7 +172,7 @@ class BlackjackGame:
             elif dealer_value != 21 and len(self.dealer.hand) == 2 and player.is_insured:
                 results.append(f"{player.name}: Ubezpieczenie stracone")
             
-        self.screen.fill(GREEN)
+        draw_background(self.screen, self.counting_prohibited)
         draw_text("Wyniki rundy", WHITE, self.screen, 450, 50)
         y = 100
         for result in results:

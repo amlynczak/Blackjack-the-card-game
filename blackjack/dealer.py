@@ -29,11 +29,14 @@ class Dealer():
 
         return value
     
-    def dealers_turn(self, deck, screen, main_player, bot_players):
+    def dealers_turn(self, deck, screen, main_player, bot_players, couting_prohibited=True):
         """Starts the dealer's turn, dealing cards until the value is at"""
         print(f"Dealer's cards: {self}")
         while self.should_hit():
-            card = deck.deal_card()
+            if couting_prohibited:
+                card = deck.deal_card()
+            else:
+                card = deck.deal_card_and_update_count(bot_players+[main_player])
             self.add_card(card)
             print(f"Dealer hits: {card}")
             time.sleep(3)

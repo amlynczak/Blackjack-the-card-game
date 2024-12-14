@@ -5,10 +5,10 @@ import math
 pygame.init()
 
 GREEN = (0, 128, 0)
+DARK_GREEN = (0, 100, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
-DARK_BLUE = (0, 0, 255)
 CARD_WIDTH, CARD_HEIGHT = 60, 90
 
 font = pygame.font.SysFont('courier new', 17)
@@ -25,6 +25,10 @@ for suit in ['spades', 'hearts', 'diamonds', 'clubs']:
         card_images[f"{face}_of_{suit}"] = pygame.transform.scale(pygame.image.load(f"assets/images/cards/{face}_of_{suit}.png"), (CARD_WIDTH, CARD_HEIGHT))
         card_images_bots[f"{face}_of_{suit}"] = pygame.transform.scale(pygame.image.load(f"assets/images/cards/{face}_of_{suit}.png"), (CARD_WIDTH * 0.66, CARD_HEIGHT * 0.66))
 
+chips_images = {}
+for chip in ['10', '20', '50', '100', '200']:
+    chips_images[chip] = pygame.transform.scale(pygame.image.load(f"assets/images/chips/{chip}.png"), (30, 30))
+
 
 def draw_text(text, color, surface, x, y):
     textobj = font.render(text, True, color)
@@ -32,17 +36,7 @@ def draw_text(text, color, surface, x, y):
     textrect.topleft = (x, y)
     surface.blit(textobj, textrect)
 
-def draw_text_rotated(text, color, surface, x, y, angle):
-    text_surface = font.render(text, True, color)
-    rotated_text = pygame.transform.rotate(text_surface, angle)
-    rect = rotated_text.get_rect()
-    surface.blit(rotated_text, (x - rect.width//2, y - rect.height//2))
-
 def draw_button(text, color, surface, x, y, width, height):
-    pygame.draw.rect(surface, color, (x, y, width, height))
-    draw_text(text, (0, 0, 0), surface, x + 10, y + 10)
-
-def draw_button_unavailable(text, color, surface, x, y, width, height):
     pygame.draw.rect(surface, color, (x, y, width, height))
     draw_text(text, (0, 0, 0), surface, x + 10, y + 10)
 
@@ -50,7 +44,7 @@ def draw_background(screen, counting_prohibited=True):
     if counting_prohibited:
         screen.fill(GREEN)
     else:
-        screen.fill(DARK_BLUE)
+        screen.fill(DARK_GREEN)
     pygame.display.flip()
 
 
@@ -63,6 +57,8 @@ def display_game_state(screen, main_player, dealer, bot_players, counting_prohib
             x = (i + 1) * players_step
             y = screen.get_height() - 200
             display_hand(hand, x - shift, y, screen)
+        display_chips(main_player, screen)
+
         shift = 30 + 50 * (dealer.hand.__len__() - 1)
         display_hand_dealer(dealer, screen.get_width()//2 - shift , 20, screen, dealer_show_all)
 
@@ -127,14 +123,17 @@ def display_game_state(screen, main_player, dealer, bot_players, counting_prohib
                 draw_button("DOUBLE", WHITE, screen, 130, screen.get_height()-120, 100, 50)
             else:
                 pygame.draw.rect(screen, (100, 100, 100), (130, screen.get_height()-120, 100, 50))
+
             if main_player.can_split():
                 draw_button("SPLIT", WHITE, screen, 130, screen.get_height()-60, 100, 50)
             else:
                 pygame.draw.rect(screen, (100, 100, 100), (130, screen.get_height()-60, 100, 50))
+
             if main_player.can_insurance(dealer.hand):
                 draw_button("INSURANCE", WHITE, screen, 240, screen.get_height()-120, 100, 50)
             else:
                 pygame.draw.rect(screen, (100, 100, 100), (240, screen.get_height()-120, 100, 50))
+
             if main_player.can_surrender():
                 draw_button("SURRENDER", WHITE, screen, 240, screen.get_height()-60, 100, 50)
             else:
@@ -155,16 +154,29 @@ def display_hand(hand, x, y, screen):
         screen.blit(text, (x + 200, y + 100))
 
 def display_hand_bot(hand, x, y, screen, right_hand_side=True):
-    font = pygame.font.Font(None, 18)
+    bet = hand.bet
+    if right_hand_side:
+        if hand.has_doubled_down:
+            screen.blit(chips_images[str(int(bet/2))], (x - 50, y-100))
+            screen.blit(chips_images[str(int(bet/2))], (x - 65, y-100))
+        else:
+            screen.blit(chips_images[str(int(bet))], (x - 50, y-100))
+    else:
+        if hand.has_doubled_down:
+            screen.blit(chips_images[str(int(bet/2))], (x + 50, y-100))
+            screen.blit(chips_images[str(int(bet/2))], (x + 65, y-100))
+        else:
+            screen.blit(chips_images[str(int(bet))], (x + 50, y-100))
+
     for j, card in enumerate(hand.cards):
         card_img = card_images_bots[str(card)]
         if hand.has_doubled_down and j == 2:
             card_img = pygame.transform.rotate(card_img, 90)
         
         if right_hand_side:
-            screen.blit(card_img, (x - j * 20, y - j * 20))
+            screen.blit(card_img, (x - j * 20, y - j * 10))
         else:
-            screen.blit(card_img, (x + j * 20, y - j * 20))
+            screen.blit(card_img, (x + j * 20, y - j * 10))
     text = font.render(f"{hand.name}({hand.get_hand_value()})", True, WHITE)
     screen.blit(text, (x - 20, y + 65))
 
@@ -177,8 +189,18 @@ def display_hand_dealer(dealer, x, y, screen, show_all=False):
         else:
             screen.blit(card_images['back'], (x + i * 100, y))
     
-    if not show_all:
-        text = font.render(f"Dealer: {dealer.hand[0]} and [hidden]", True, WHITE)
-    else:
+    if show_all:
         text = font.render(f"Dealer: {dealer.get_hand_value()}", True, WHITE)
-    screen.blit(text, (x, y + 100))
+        screen.blit(text, (x, y + 100))
+
+def display_chips(player, screen):
+    y = screen.get_height() - 300
+    x_step = (screen.get_width() - 1000) // (player.hands.__len__() + 1)
+    for i, hand in enumerate(player.hands):
+        x = 485 + (i + 1) * x_step
+        bet = hand.bet
+        if hand.has_doubled_down:
+            screen.blit(chips_images[str(int(bet/2))], (x, y))
+            screen.blit(chips_images[str(int(bet/2))], (x + 15, y))
+        else:
+            screen.blit(chips_images[str(int(bet))], (x, y))

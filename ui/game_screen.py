@@ -131,7 +131,6 @@ class BlackjackGame:
 
         return True
 
-
     def check_winner(self):
         dealer_value = self.dealer.get_hand_value()
         results = []
@@ -292,7 +291,7 @@ class BlackjackGame:
         display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited, dealer_show_all=True)
         for players in [self.main_player] + self.bot_players:
             players.update_count(self.dealer.hand[1])
-        self.dealer.dealers_turn(self.deck, self.screen, self.main_player, self.bot_players)
+        self.dealer.dealers_turn(self.deck, self.screen, self.main_player, self.bot_players, self.counting_prohibited)
         time.sleep(5)
 
         results = self.check_winner()

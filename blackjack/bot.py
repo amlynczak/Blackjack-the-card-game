@@ -29,7 +29,8 @@ class Bot(Player):
     def decide_bet(self, standard_bet):
         '''Decides the bet to place based on the standard bet'''
         r = random.uniform(0, 1)
-        if r <= 0.9:
+        if r <= 0.5:
             return standard_bet
         else:
-            return standard_bet * random.randint(1, 5)
+            bet_amounts = [10, 20, 50, 100, 200]
+            return random.choice(bet_amounts)

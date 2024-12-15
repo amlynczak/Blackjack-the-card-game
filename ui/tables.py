@@ -32,7 +32,7 @@ def choose_table(screen):
                 if rect1.collidepoint(event.pos):
                     num_of_players = json.loads(open("assets/settings.json").read())["number_of_players"]
                     num_of_decks = json.loads(open("assets/settings.json").read())["number_of_decks"]
-                    pygame.display.set_caption("Blackjack")
+                    pygame.display.set_caption("♣♦♥♠ Blackjack - Stół 1 ♣♦♥♠")
                     game = BlackjackGame(number_of_players=num_of_players, number_of_decks=num_of_decks)
                     game.play()
                     screen = pygame.display.set_mode((800, 600))
@@ -41,13 +41,14 @@ def choose_table(screen):
                 elif rect2.collidepoint(event.pos):
                     num_of_players = json.loads(open("assets/settings.json").read())["number_of_players"]
                     num_of_decks = json.loads(open("assets/settings.json").read())["number_of_decks"]
-                    pygame.display.set_caption("Blackjack")
+                    pygame.display.set_caption("♣♦♥♠ Blackjack - Stół 2 ♣♦♥♠")
                     game = BlackjackGame(number_of_players=num_of_players, number_of_decks=num_of_decks, counting_prohibited=False)
                     game.play()
                     screen = pygame.display.set_mode((800, 600))
                     screen.fill((0, 0, 0))
                     pygame.display.set_caption("Wybierz stół")
                 elif back_button_rect.collidepoint(event.pos):
+                    pygame.display.set_caption("♣♦♥♠ Blackjack app ♣♦♥♠")
                     return
 
         pygame.draw.rect(screen, GREEN, rect1)

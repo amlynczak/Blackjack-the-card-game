@@ -34,7 +34,7 @@ for suit in ['spades', 'hearts', 'diamonds', 'clubs']:
         card_images_bots[f"{face}_of_{suit}"] = add_border(pygame.transform.scale(pygame.image.load(f"assets/images/cards/{face}_of_{suit}.png"), (CARD_WIDTH * 0.66, CARD_HEIGHT * 0.66)))
 
 chips_images = {}
-for chip in ['10', '20', '50', '100', '200']:
+for chip in ['10', '20', '50', '100', '200', '500']:
     chips_images[chip] = pygame.transform.scale(pygame.image.load(f"assets/images/chips/{chip}.png"), (30, 30))
 
 
@@ -44,17 +44,33 @@ def draw_text(text, color, surface, x, y):
     textrect.topleft = (x, y)
     surface.blit(textobj, textrect)
 
+def draw_text_center(text, color, surface, y):
+    textobj = font.render(text, True, color)
+    textrect = textobj.get_rect(center=(surface.get_width() // 2, y))
+    surface.blit(textobj, textrect)
+
+def draw_title(text, color, surface, y):
+    font = pygame.font.SysFont('courier new', 30)
+    textobj = font.render(text, True, color)
+    textrect = textobj.get_rect(center=(surface.get_width() // 2, y))
+    surface.blit(textobj, textrect)
+
 def draw_button(text, color, surface, x, y, width, height):
     pygame.draw.rect(surface, color, (x, y, width, height))
     textobj = font.render(text, True, (0, 0, 0))
     textrect = textobj.get_rect(center=(x + width // 2, y + height // 2))
     surface.blit(textobj, textrect)
 
-def draw_background(screen, counting_prohibited=True):
+def draw_background(screen, counting_prohibited=True, betting=False):
     if counting_prohibited:
         screen.fill(GREEN)
     else:
         screen.fill(DARK_GREEN)
+    if not betting:
+        draw_text("DEALER HITS ON SOFT 17", WHITE, screen, screen.get_width() - 240, 20)
+        draw_text("BLACKJACK PAYS 3 TO 2", WHITE, screen, 20, 20)
+        draw_text("INSURANCE PAYS 2 TO 1", WHITE, screen, 20, 40)
+    
     pygame.display.flip()
 
 
@@ -113,11 +129,12 @@ def display_game_state(screen, main_player, dealer, bot_players, counting_prohib
         
         if players_turn:
             suggested_action = main_player.suggest_action(dealer.hand)
-            rect_width, rect_height = 300, 50
+            rect_width, rect_height = 300, 60
             rect_x = screen.get_width() - rect_width - 10
             rect_y = screen.get_height() - rect_height - 10
             pygame.draw.rect(screen, (50, 50, 50), (rect_x, rect_y, rect_width, rect_height))
-            draw_text(f"Sugerowana akcja: {suggested_action}", WHITE, screen, rect_x + 10, rect_y + 10)
+            draw_text(f"Sugerowana akcja:", WHITE, screen, rect_x + 10, rect_y + 10)
+            draw_text(f"{suggested_action}", WHITE, screen, rect_x + 10, rect_y + 30)
 
             if main_player.can_hit(main_player.hand_id):
                 draw_button("HIT", WHITE, screen, 20, screen.get_height()-120, 100, 50)

@@ -37,9 +37,9 @@ class BlackjackGame:
             random_names = f.read().splitlines()
             random.shuffle(random_names)
         if self.counting_prohibited:
-            self.bot_players = [Bot(name=random_names[i], money = 200) for i in range(number_of_players - 1)]
+            self.bot_players = [Bot(name=random_names[i], money = 1000) for i in range(number_of_players - 1)]
         else:
-            self.bot_players = [CountingBot(name=random_names[i], money = 150, number_of_decks=number_of_decks) for i in range(number_of_players - 1)]
+            self.bot_players = [CountingBot(name=random_names[i], money = 1000, number_of_decks=number_of_decks) for i in range(number_of_players - 1)]
         self.dealer = Dealer()
         self.players_turn = len(self.bot_players)//2
 
@@ -164,6 +164,7 @@ class BlackjackGame:
                 else:
                     results.append(f"{hand.name}: remis")
                     player.money += hand.bet
+            results[-1] += f"; saldo: {player.money}"
 
             if dealer_value == 21 and len(self.dealer.hand) == 2 and player.is_insured:
                 results.append(f"{player.name}: Ubezpieczenie zadziałało!")

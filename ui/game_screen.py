@@ -32,8 +32,7 @@ class BlackjackGame:
         self.deck = Deck(number_of_decks)
         self.counting_prohibited = counting_prohibited
         self.standard_bet = standard_bet
-        method = json.loads(open("assets/settings.json").read())["counting_method"]
-        self.main_player = Player(name="Gracz", method = method, money = 1000)
+        self.main_player = Player(name="Gracz", money = 1000)
         with open("assets/random_names") as f:
             random_names = f.read().splitlines()
             random.shuffle(random_names)

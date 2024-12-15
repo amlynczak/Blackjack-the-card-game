@@ -14,7 +14,7 @@ import os
 import json
 
 class Player:
-    def __init__(self, name, method, money = 1000):
+    def __init__(self, name, money = 1000):
         '''Initializes the player with a name, hand, and money'''
         self.name = name
         self.hands = [Hand(name, bet = 0)]
@@ -228,14 +228,7 @@ class Player:
                     print("play safe")
                     return f'{action}/{self.play_safe(action)}'
 
-        if action == 'H':
-            return 'hit'
-        elif action == 'S':
-            return 'stand'
-        elif action == 'D':
-            return 'double'
-        elif action == 'P':
-            return 'split'
+        return action
 
     def more_aggressive(self, action):
         if action == 'H':
@@ -243,7 +236,7 @@ class Player:
         elif action == 'S':
             return 'H'
         elif action == 'P':
-            return 'P'
+            return 'P' if self.can_split() else 'S'
         elif action == 'D':
             return 'D'
         
@@ -261,6 +254,7 @@ class Player:
         '''Suggests the action to take based on the dealer's hand'''
         if counting:
             action = self.decide_action_based_on_count(dealer_hand)
+            print("action in suggest_action: ", action)
         else:
             action = self.decide_action(dealer_hand)
 
@@ -282,8 +276,22 @@ class Player:
             return 'STAND/DOUBLE DOWN'
         elif action == 'S/P':
             return 'STAND/SPLIT'
+        elif action == 'S/H':
+            return 'STAND/HIT'
         elif action == 'D/P':
             return 'DOUBLE DOWN/SPLIT'
+        elif action == 'D/H':
+            return 'DOUBLE DOWN/HIT'
+        elif action == 'D/S':
+            return 'DOUBLE DOWN/STAND'
+        elif action == 'P/H':
+            return 'SPLIT/HIT'
+        elif action == 'P/D':
+            return 'SPLIT/DOUBLE DOWN'
+        elif action == 'P/S':
+            return 'SPLIT/STAND'
+        else:
+            return 'UNKNOWN'
         
 
     def update_count(self, card):

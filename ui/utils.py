@@ -221,8 +221,8 @@ def display_hand_dealer(dealer, x, y, screen, show_all=False):
             screen.blit(card_images['back'], (x + i * 100, y))
     
     if show_all:
-        text = font.render(f"Dealer: {dealer.get_hand_value()}", True, WHITE)
-        screen.blit(text, ((screen.get_width()/2)-30, y + 100))
+        text = f"Dealer: {dealer.get_hand_value()}"
+        draw_text_center(text, WHITE, screen, 150)
 
 def display_chips(player, screen):
     y = screen.get_height() - 300

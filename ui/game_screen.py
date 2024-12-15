@@ -13,7 +13,7 @@ from blackjack.bot import Bot
 
 from card_counter.counting_bot import CountingBot
 
-from ui.utils import draw_text, draw_button, display_game_state, draw_background, draw_text_center
+from ui.utils import draw_text, draw_button, display_game_state, draw_background, draw_text_center, draw_title
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 pygame.init()
@@ -33,7 +33,7 @@ class BlackjackGame:
         self.counting_prohibited = counting_prohibited
         self.standard_bet = standard_bet
         method = json.loads(open("assets/settings.json").read())["counting_method"]
-        self.main_player = Player(name="Player", method = method, money = 1000)
+        self.main_player = Player(name="Gracz", method = method, money = 1000)
         with open("assets/random_names") as f:
             random_names = f.read().splitlines()
             random.shuffle(random_names)
@@ -173,10 +173,10 @@ class BlackjackGame:
                 results.append(f"{player.name}: Ubezpieczenie stracone")
             
         draw_background(self.screen, self.counting_prohibited, True)
-        draw_text("Wyniki rundy", WHITE, self.screen, 450, 50)
+        draw_title("Wyniki rundy", WHITE, self.screen, 50)
         y = 100
         for result in results:
-            draw_text(result, WHITE, self.screen, 450, y)
+            draw_text_center(result, WHITE, self.screen, y)
             y += 50
         pygame.display.flip()
         time.sleep(5)

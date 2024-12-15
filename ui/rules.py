@@ -2,7 +2,7 @@ import pygame
 import sys
 import os
 
-from ui.utils import draw_button, draw_text
+from ui.utils import draw_button, draw_text, draw_title
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
@@ -25,7 +25,7 @@ def show_rules(screen):
 
         screen.fill((0, 0, 0))
 
-        draw_text('Zasady gry', (255, 255, 255), screen, 590, 50)
+        draw_title('Zasady gry', (255, 255, 255), screen, 50)
 
         # Left column
         draw_text('1. Gracze przy stole (oraz krupier) otrzymują po dwie karty.', (255, 255, 255), screen, 20, 100)

@@ -13,7 +13,7 @@ from blackjack.bot import Bot
 
 from card_counter.counting_bot import CountingBot
 
-from ui.utils import draw_text, draw_button, display_game_state
+from ui.utils import draw_text, draw_button, display_game_state, draw_background, draw_text_center
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 pygame.init()
@@ -33,7 +33,7 @@ class BlackjackGame:
         self.counting_prohibited = counting_prohibited
         self.standard_bet = standard_bet
         method = json.loads(open("assets/settings.json").read())["counting_method"]
-        self.main_player = Player(name="Player", method = method, money = 200)
+        self.main_player = Player(name="Player", method = method, money = 1000)
         with open("assets/random_names") as f:
             random_names = f.read().splitlines()
             random.shuffle(random_names)
@@ -46,15 +46,15 @@ class BlackjackGame:
 
     def start_new_round(self):
         while True:
-            self.screen.fill(GREEN)
-            draw_text(f"Twoje saldo: {self.main_player.money} WFiIS żetonów", WHITE, self.screen, 350, 200)
-            draw_text("Jaką stawkę chcesz postawić?", WHITE, self.screen, 350, 250)
-            bet_amounts = [10, 20, 50, 100, 200]
-            x = 350
+            draw_background(self.screen, self.counting_prohibited, True)
+            draw_text_center(f"Twoje saldo: {self.main_player.money} WFiIS żetonów", WHITE, self.screen, 200)
+            draw_text_center("Jaką stawkę chcesz postawić?", WHITE, self.screen, 250)
+            bet_amounts = [10, 20, 50, 100, 200, 500]
+            x = 175
             for amount in bet_amounts:
                 draw_button(f"{amount}", WHITE, self.screen, x, 350, 100, 50)
                 x += 150
-            draw_button("Opuść stół", WHITE, self.screen, 350, 450, 200, 50)
+            draw_button("Opuść stół", WHITE, self.screen, 500, 450, 200, 50)
             pygame.display.flip()
             bet = None
             while bet is None:
@@ -65,9 +65,9 @@ class BlackjackGame:
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         x, y = pygame.mouse.get_pos()
                         for i, amount in enumerate(bet_amounts):
-                            if x > 350 + i * 150 and x < 450 + i * 150 and y > 350 and y < 400:
+                            if x > 175 + i * 150 and x < 375 + i * 150 and y > 350 and y < 400:
                                 bet = amount
-                        if x > 350 and x < 550 and y > 450 and y < 500:
+                        if x > 500 and x < 700 and y > 450 and y < 500:
                             bet = 'leave'
             if bet == 'leave':
                 return False
@@ -131,7 +131,6 @@ class BlackjackGame:
 
         return True
 
-
     def check_winner(self):
         dealer_value = self.dealer.get_hand_value()
         results = []
@@ -173,7 +172,7 @@ class BlackjackGame:
             elif dealer_value != 21 and len(self.dealer.hand) == 2 and player.is_insured:
                 results.append(f"{player.name}: Ubezpieczenie stracone")
             
-        self.screen.fill(GREEN)
+        draw_background(self.screen, self.counting_prohibited, True)
         draw_text("Wyniki rundy", WHITE, self.screen, 450, 50)
         y = 100
         for result in results:
@@ -292,7 +291,7 @@ class BlackjackGame:
         display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited, dealer_show_all=True)
         for players in [self.main_player] + self.bot_players:
             players.update_count(self.dealer.hand[1])
-        self.dealer.dealers_turn(self.deck, self.screen, self.main_player, self.bot_players)
+        self.dealer.dealers_turn(self.deck, self.screen, self.main_player, self.bot_players, self.counting_prohibited)
         time.sleep(5)
 
         results = self.check_winner()

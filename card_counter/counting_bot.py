@@ -121,12 +121,27 @@ class CountingBot(Bot):
         with open(file_path, 'r') as file:
             for line in file:
                 if line.startswith(str(int(true_count))):
-                    bet = round(float(line.split()[1]) * self.money * (-1) / 5) * 5
+                    bet = round(float(line.split()[1]) * self.money * (-1))
                     break
-        if bet > self.money or bet < standard_bet:
-            return standard_bet
+        if random.uniform(0, 1) <= 0.8:   
+            if bet < 15:
+                return 10
+            elif bet >= 15 and bet < 35:
+                return 20
+            elif bet >= 35 and bet < 75:
+                return 50
+            elif bet >= 75 and bet < 150:
+                return 100
+            elif bet >= 150 and bet < 350:
+                return 200
+            elif bet >= 350:
+                return 500
         else:
-            return bet
+            while True:
+                bet_amounts = [10, 20, 50, 100, 200, 500]
+                bet = random.choice(bet_amounts)
+                if bet <= self.money:
+                    return bet
 
     def update_count(self, card):
         '''Updates the count based on the card'''

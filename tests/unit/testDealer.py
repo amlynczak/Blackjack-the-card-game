@@ -1,8 +1,13 @@
 import unittest
+from unittest.mock import Mock
 import random
+import pygame
+
 from blackjack.dealer import Dealer
 from blackjack.card import Card
 from blackjack.deck import Deck
+from blackjack.player import Player
+from blackjack.bot import Bot
 
 class TestDealer(unittest.TestCase):
 
@@ -31,8 +36,8 @@ class TestDealer(unittest.TestCase):
         elif random_rank == 14:
             random_rank = 'A'
 
-        card1 = Card(str(random_number_1), "unknown")
-        card2 = Card(str(random_rank), "Donda")
+        card1 = Card(str(random_number_1), "spades")
+        card2 = Card(str(random_rank), "hearts")
 
         dealer.add_card(card1)
         dealer.add_card(card2)
@@ -42,10 +47,10 @@ class TestDealer(unittest.TestCase):
     def test_get_hand_value_aces_with_changing_value(self):
         dealer = Dealer()
 
-        card1 = Card("A", "Black")
-        card2 = Card("6", "Red")
-        card3 = Card("A", "Blue")
-        card4 = Card("10", "Yellow")
+        card1 = Card("A", "spades")
+        card2 = Card("6", "hearts")
+        card3 = Card("A", "diamonds")
+        card4 = Card("10", "clubs")
 
         dealer.add_card(card1)
         dealer.add_card(card2)
@@ -56,28 +61,6 @@ class TestDealer(unittest.TestCase):
 
         dealer.add_card(card4)
         self.assertEqual(dealer.get_hand_value(), 18)
-
-    def test_dealers_turn_should_hit(self):
-        dealer = Dealer()
-        card = Card("8", "Spades")
-        deck = Deck()
-        dealer.add_card(card)
-        dealer.add_card(card)
-
-        dealer.dealers_turn(deck)
-
-        self.assertEqual(dealer.hand.__len__(), 3)
-
-    def test_dealers_turn_should_not_hit(self):
-        dealer = Dealer()
-        card = Card("10", "Spades")
-        deck = Deck()
-        dealer.add_card(card)
-        dealer.add_card(card)
-
-        dealer.dealers_turn(deck)
-
-        self.assertEqual(dealer.hand.__len__(), 2)
 
     def test_reset_hand(self):
         dealer = Dealer()

@@ -10,7 +10,7 @@ class TestCard(unittest.TestCase):
 
     def test_value_cards(self):
         for rank in range(2, 10):
-            card = Card(str(rank), 'U')#U is a dummy suit
+            card = Card(str(rank), 'U')
             self.assertEqual(card.value(), rank)
         
         for rank in ['J', 'Q', 'K']:

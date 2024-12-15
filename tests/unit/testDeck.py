@@ -1,4 +1,5 @@
 from blackjack.deck import Deck
+from blackjack.bot import Bot
 import unittest
 
 class TestDeck(unittest.TestCase):
@@ -17,4 +18,10 @@ class TestDeck(unittest.TestCase):
     def test_deal_card(self):
         deck = Deck()
         card = deck.deal_card()
+        self.assertEqual(len(deck.cards), 51)
+
+    def test_deal_card_and_update_counts(self):
+        deck = Deck()
+        players = [Bot(), Bot()]
+        card = deck.deal_card_and_update_counts(players)
         self.assertEqual(len(deck.cards), 51)

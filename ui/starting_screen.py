@@ -20,6 +20,7 @@ class StartScreen:
     def run(self):
         self.screen.fill((0, 0, 0))
         
+        
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -38,6 +39,10 @@ class StartScreen:
                         pygame.display.set_caption("♣♦♥♠ Blackjack app ♣♦♥♠")
 
             self.screen.fill((0, 0, 0))
+            self.screen.blit(pygame.transform.scale(pygame.image.load("assets/images/suits/spades.png"), (100, 200)), (75, 100))
+            self.screen.blit(pygame.transform.scale(pygame.image.load("assets/images/suits/hearts.png"), (100, 200)), (75, 350))
+            self.screen.blit(pygame.transform.scale(pygame.image.load("assets/images/suits/diamonds.png"), (100, 200)), (625, 100))
+            self.screen.blit(pygame.transform.scale(pygame.image.load("assets/images/suits/clubs.png"), (100, 200)), (625, 350))
 
             draw_title('Blackjack - gra karciana', (255, 255, 255), self.screen, 50)
 

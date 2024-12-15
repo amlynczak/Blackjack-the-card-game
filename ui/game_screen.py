@@ -238,19 +238,16 @@ class BlackjackGame:
                     break
                 else:
                     if action == 'hit' and self.main_player.can_hit(self.main_player.hand_id):
-                        print("HIT")
                         if self.counting_prohibited and not self.main_player.hit(self.deck.deal_card(), self.main_player.hand_id):
                             break
                         elif not self.counting_prohibited and not self.main_player.hit(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]), self.main_player.hand_id):
                             break
                     elif action == 'double' and self.main_player.can_double_down(self.main_player.hand_id):
-                        print("DOUBLE DOWN")
                         if self.counting_prohibited and not self.main_player.double_down(self.deck.deal_card(), self.main_player.hand_id):
                             break
                         elif not self.counting_prohibited and not self.main_player.double_down(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]), self.main_player.hand_id):
                             break
                     elif action == 'split' and self.main_player.can_split():
-                        print("SPLIT")
                         if self.counting_prohibited:
                             self.main_player.split(self.deck.deal_card(), self.deck.deal_card())
                             increment = False
@@ -265,7 +262,6 @@ class BlackjackGame:
                         self.main_player.surrender()
                         break
                     elif action == 'stand' and self.main_player.can_stand(self.main_player.hand_id):
-                        print("STAND")
                         display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited, players_turn=True)
                         break
             if increment:
@@ -359,16 +355,12 @@ class BlackjackGame:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = pygame.mouse.get_pos()
                     if x > 20 and x < 120 and y > SCREEN_HEIGHT - 120 and y < SCREEN_HEIGHT - 70:
-                        print("HIT")
                         return 'hit'
                     elif x > 20 and x < 120 and y > SCREEN_HEIGHT - 60 and y < SCREEN_HEIGHT - 10:
-                        print("STAND")
                         return 'stand'
                     elif x > 130 and x < 230 and y > SCREEN_HEIGHT - 120 and y < SCREEN_HEIGHT - 70:
-                        print("DOUBLE DOWN")
                         return 'double'
                     elif x > 130 and x < 230 and y > SCREEN_HEIGHT - 60 and y < SCREEN_HEIGHT - 10:
-                        print("SPLIT")
                         return 'split'
                     elif x > 240 and x < 340 and y > SCREEN_HEIGHT - 120 and y < SCREEN_HEIGHT - 70:
                         return 'insurance'

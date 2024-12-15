@@ -67,7 +67,7 @@ def draw_background(screen, counting_prohibited=True, betting=False):
     else:
         screen.fill(DARK_GREEN)
     if not betting:
-        draw_text("DEALER HITS ON SOFT 17", WHITE, screen, screen.get_width() - 240, 20)
+        draw_text("DEALER STANDS ON SOFT 17", WHITE, screen, screen.get_width() - 250, 20)
         draw_text("BLACKJACK PAYS 3 TO 2", WHITE, screen, 20, 20)
         draw_text("INSURANCE PAYS 2 TO 1", WHITE, screen, 20, 40)
     
@@ -141,7 +141,7 @@ def display_game_state(screen, main_player, dealer, bot_players, counting_prohib
             else:
                 pygame.draw.rect(screen, (100, 100, 100), (20, screen.get_height()-120, 100, 50))
 
-            if main_player.can_stand():
+            if main_player.can_stand(main_player.hand_id):
                 draw_button("STAND", WHITE, screen, 20, screen.get_height()-60, 100, 50)
             else:
                 pygame.draw.rect(screen, (100, 100, 100), (20, screen.get_height()-60, 100, 50))

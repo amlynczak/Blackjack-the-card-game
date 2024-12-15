@@ -61,8 +61,8 @@ class Player:
         self.is_insured = False
         self.has_surrenderred = False
 
-    def can_stand(self):
-        return self.get_hand_value() <= 21
+    def can_stand(self, hand_id = 0):
+        return self.get_hand_value(hand_id) <= 21
 
     def can_hit(self, hand_id = 0):
         return self.get_hand_value(hand_id) < 21
@@ -88,23 +88,19 @@ class Player:
     def split(self, new_card1, new_card2):
         '''Player splits the hand'''
         if self.can_split():
-            # Remove the hand to be split
             original_hand = self.hands.pop(self.hand_id)
             self.money += original_hand.bet
 
-            # Create two new hands
             new_hand1 = Hand(original_hand.name + "-1", original_hand.bet)
             self.money -= original_hand.bet
             new_hand2 = Hand(original_hand.name + "-2", original_hand.bet)
             self.money -= original_hand.bet
 
-            # Add one card from the original hand to each new hand
             new_hand1.add_card(original_hand.cards[0])
             new_hand1.add_card(new_card1)
             new_hand2.add_card(original_hand.cards[1])
             new_hand2.add_card(new_card2)
 
-            # Add the new hands to the player's hands
             self.hands.append(new_hand1)
             self.hands.append(new_hand2)
 

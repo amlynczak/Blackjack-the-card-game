@@ -193,20 +193,26 @@ class BlackjackGame:
                 increment = True
                 while True and bot.hands[bot.hand_id].isBlackjack == False:
                     increment = True
+                    if bot.get_hand_value() > 21:
+                        break
                     display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited)
                     time.sleep(1)
                     action = bot.decide_final_action(self.dealer.hand)
                     if action == 'hit' and bot.can_hit(bot.hand_id):
                         print(f"{bot.name} hits")
                         if self.counting_prohibited and not bot.hit(self.deck.deal_card(), bot.hand_id):
+                            increment = False
                             break
                         elif not self.counting_prohibited and not bot.hit(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]), bot.hand_id):
+                            increment = False
                             break
                     elif action == 'double' and bot.can_double_down(bot.hand_id):
                         print(f"{bot.name} doubles down")
                         if self.counting_prohibited and not bot.double_down(self.deck.deal_card(), bot.hand_id):
+                            increment = True
                             break
                         elif not self.counting_prohibited and not bot.double_down(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]), bot.hand_id):
+                            increment = True
                             break
                     elif action == 'split' and bot.can_split():
                         print(f"{bot.name} splits")
@@ -219,9 +225,11 @@ class BlackjackGame:
                     elif action == 'stand' and bot.can_stand(bot.hand_id):
                         print(f"{bot.name} stands")
                         display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited)
+                        increment = True
                         break
                     elif action == 'surrender' and bot.can_surrender():
                         bot.surrender()
+                        increment = True
                         break
                     elif action == 'insurance' and bot.can_insurance(self.dealer.hand):
                         bot.insurance(self.dealer.hand)
@@ -271,6 +279,8 @@ class BlackjackGame:
         for bot in self.bot_players[self.players_turn:]:
             while bot.hand_id < len(bot.hands):
                 increment = True
+                if bot.get_hand_value() > 21:
+                    break
                 while True and bot.hands[bot.hand_id].isBlackjack == False:
                     increment = True
                     display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited)
@@ -279,14 +289,18 @@ class BlackjackGame:
                     if action == 'hit' and bot.can_hit(bot.hand_id):
                         print(f"{bot.name} hits")
                         if self.counting_prohibited and not bot.hit(self.deck.deal_card(), bot.hand_id):
+                            increment = False
                             break
                         elif not self.counting_prohibited and not bot.hit(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]), bot.hand_id):
+                            increment = False
                             break
                     elif action == 'double' and bot.can_double_down(bot.hand_id):
                         print(f"{bot.name} doubles down")
                         if self.counting_prohibited and not bot.double_down(self.deck.deal_card(), bot.hand_id):
+                            increment = True
                             break
                         elif not self.counting_prohibited and not bot.double_down(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]), bot.hand_id):
+                            increment = True
                             break
                     elif action == 'split' and bot.can_split():
                         print(f"{bot.name} splits")
@@ -299,9 +313,11 @@ class BlackjackGame:
                     elif action == 'stand' and bot.can_stand(bot.hand_id):
                         print(f"{bot.name} stands")
                         display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited)
+                        increment = True
                         break
                     elif action == 'surrender' and bot.can_surrender():
                         bot.surrender()
+                        increment = True
                         break
                     elif action == 'insurance' and bot.can_insurance(self.dealer.hand):
                         bot.insurance(self.dealer.hand)

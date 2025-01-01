@@ -4,14 +4,14 @@ import os
 
 class Bot(Player):
     def __init__(self, name="Bot", money = 1000):
-        '''Initializes the bot with a name, hand, and money'''
         super().__init__(name, money)
             
     def decide_final_action(self, dealer_hand):
+        '''Decides the final action to take'''
         action  = self.decide_action(dealer_hand)
-        print("action in bot: ", action)
         r = random.uniform(0, 1)
 
+        '''Bots are changing strategy 10% of the time'''
         if action == 'H' and r <= 0.9:
             return 'hit'
         elif action == 'D' and r <= 0.9:
@@ -27,7 +27,7 @@ class Bot(Player):
                 return 'stand'
             
     def decide_bet(self, standard_bet):
-        '''Decides the bet to place based on the standard bet'''
+        '''Decides the bet amount (50% random, 50% standard)'''
         r = random.uniform(0, 1)
         if r <= 0.5:
             return standard_bet

@@ -40,12 +40,12 @@ class TestPlayer(unittest.TestCase):
         self.assertEqual(player.get_hand_value(), 22)
 
     def test_can_play(self):
-        player = Player("Kendrick Lamar")
+        player = Player("Jakub Skoczek")
         player.money = 0
 
         self.assertFalse(player.can_play(20))
 
-        player.money = 1000
+        player.money = 2137
 
         self.assertTrue(player.can_play(20))
 
@@ -74,7 +74,7 @@ class TestPlayer(unittest.TestCase):
         self.assertFalse(player.can_stand())
 
     def test_can_hit(self):
-        player = Player("Magnus Carlsen")
+        player = Player("Jan Augustyn")
         card = Card("A", "Spades")
         player.add_card(card)
         player.add_card(card)
@@ -128,7 +128,7 @@ class TestPlayer(unittest.TestCase):
         self.assertFalse(result)
 
     def test_can_split(self):
-        player = Player("Mike Ehrmantraut")
+        player = Player("Zupa")
         card1 = Card("A", "Spades")
         card2 = Card("A", "Hearts")
         player.add_card(card1)
@@ -160,7 +160,7 @@ class TestPlayer(unittest.TestCase):
         self.assertEqual(player.money, 980)
 
     def test_split_not_possible(self):
-        player = Player("Gus Fring")
+        player = Player("Skam Wywial")
         player.reset_hand(10)
         card1 = Card("A", "Spades")
         card2 = Card("10", "Hearts")
@@ -232,9 +232,9 @@ class TestPlayer(unittest.TestCase):
         self.assertFalse(player.can_surrender())
 
     def test_surrender(self):
-        player = Player("Childish Gambino")
+        player = Player("KrzakTV")
         player.reset_hand(10)
-        card = Card("3", "005")
+        card = Card("3", "spades")
         player.add_card(card)
         player.add_card(card)
 

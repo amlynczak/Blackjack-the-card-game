@@ -74,14 +74,13 @@ class BlackjackGame:
                 self.main_player.reset_hand(bet)
                 break
             else:
-                print("Nie masz wystarczająco żetonów na koncie.")
+                continue
             
         for bot in self.bot_players[:]:
             if bot.can_play(self.standard_bet):
                 bet = bot.decide_bet(self.standard_bet)
                 bot.reset_hand(bet)
             else:
-                print(f"{bot.name} nie ma wystarczająco żetonów na koncie.")
                 self.bot_players.remove(bot)
 
         self.dealer.reset_hand()
@@ -111,20 +110,11 @@ class BlackjackGame:
                 
             
         if self.main_player.get_hand_value() == 21:
-            print("♣♦♥♠ Blackjack! ♣♦♥♠")
             self.main_player.hands[self.main_player.hand_id].isBlackjack = True
-            print(f"{self.main_player} Blackjack!")
-        else:
-            print(f"{self.main_player}")
 
         for bot in self.bot_players[:]:
             if bot.get_hand_value() == 21:
                 bot.hands[bot.hand_id].isBlackjack = True
-                print(f"{bot} Blackjack!")
-            else:
-                print(f"{bot}")
-        
-        print(f"Dealer: {self.dealer.hand[0]} and one [hidden] card")
 
         display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited)
 
@@ -138,39 +128,39 @@ class BlackjackGame:
         for player in players:
             for hand in player.hands:
                 if player.has_surrenderred:
-                    results.append(f"{hand.name} poddał się")
+                    results.append(f"{hand.name} poddał/a się.")
                     continue
                 if hand.isBlackjack:
                     if dealer_value == 21 and len(self.dealer.hand) == 2:
-                        results.append(f"{hand.name}: remis")
+                        results.append(f"{hand.name}: remis.")
                         player.money += hand.bet
                     else:
-                        results.append(f"{hand.name} wygrał - Blackjack!")
+                        results.append(f"{hand.name} wygrał/a - Blackjack!")
                         player.money += hand.bet * 2.5
                     continue
                 hand_value = hand.get_hand_value()
                 if hand_value > 21:
                     results.append(f"{hand.name}: Dealer wygrał!")
                 elif dealer_value > 21:
-                    results.append(f"{hand.name} wygrał!")
+                    results.append(f"{hand.name} wygrał/a!")
                     player.money += hand.bet * 2
                 elif hand_value == 21 and dealer_value == 21 and len(self.dealer.hand) == 2:
                     results.append(f"{hand.name}: Dealer wygrał!")
                 elif hand_value > dealer_value:
-                    results.append(f"{hand.name} wygrał!")
+                    results.append(f"{hand.name} wygrał/a!")
                     player.money += hand.bet * 2
                 elif dealer_value > hand_value:
                     results.append(f"{hand.name}: Dealer wygrał!")
                 else:
-                    results.append(f"{hand.name}: remis")
+                    results.append(f"{hand.name}: remis.")
                     player.money += hand.bet
-            results[-1] += f"; saldo: {player.money}"
+            results[-1] += f" *** saldo: {player.money}"
 
             if dealer_value == 21 and len(self.dealer.hand) == 2 and player.is_insured:
                 results.append(f"{player.name}: Ubezpieczenie zadziałało!")
                 player.money += player.insurance_bet * 2
-            elif dealer_value != 21 and len(self.dealer.hand) == 2 and player.is_insured:
-                results.append(f"{player.name}: Ubezpieczenie stracone")
+            elif dealer_value != 21 and player.is_insured:
+                results.append(f"{player.name}: Ubezpieczenie stracone.")
             
         draw_background(self.screen, self.counting_prohibited, True)
         draw_title("Wyniki rundy", WHITE, self.screen, 50)
@@ -183,11 +173,10 @@ class BlackjackGame:
         return results
     
     def play_round(self):
-        """Plays a game of blackjack"""
         play_on = self.start_new_round()
         if not play_on:
             return False
-        
+
         for bot in self.bot_players[:self.players_turn]:
             while bot.hand_id < len(bot.hands):
                 increment = True
@@ -199,7 +188,6 @@ class BlackjackGame:
                     time.sleep(1)
                     action = bot.decide_final_action(self.dealer.hand)
                     if action == 'hit' and bot.can_hit(bot.hand_id):
-                        print(f"{bot.name} hits")
                         if self.counting_prohibited and not bot.hit(self.deck.deal_card(), bot.hand_id):
                             increment = False
                             break
@@ -207,7 +195,6 @@ class BlackjackGame:
                             increment = False
                             break
                     elif action == 'double' and bot.can_double_down(bot.hand_id):
-                        print(f"{bot.name} doubles down")
                         if self.counting_prohibited and not bot.double_down(self.deck.deal_card(), bot.hand_id):
                             increment = True
                             break
@@ -215,7 +202,6 @@ class BlackjackGame:
                             increment = True
                             break
                     elif action == 'split' and bot.can_split():
-                        print(f"{bot.name} splits")
                         if self.counting_prohibited:
                             bot.split(self.deck.deal_card(), self.deck.deal_card())
                             increment = False
@@ -223,7 +209,6 @@ class BlackjackGame:
                             bot.split(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]), self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]))
                             increment = False
                     elif action == 'stand' and bot.can_stand(bot.hand_id):
-                        print(f"{bot.name} stands")
                         display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited)
                         increment = True
                         break
@@ -233,10 +218,12 @@ class BlackjackGame:
                         break
                     elif action == 'insurance' and bot.can_insurance(self.dealer.hand):
                         bot.insurance(self.dealer.hand)
+                    else:
+                        increment = True
+                        break
                 if increment:
                     bot.hand_id += 1
         
-        print("player's turn")
         while self.main_player.hand_id < len(self.main_player.hands):
             increment = True
             while True and self.main_player.hands[self.main_player.hand_id].isBlackjack == False:
@@ -287,7 +274,6 @@ class BlackjackGame:
                     time.sleep(1)
                     action = bot.decide_final_action(self.dealer.hand)
                     if action == 'hit' and bot.can_hit(bot.hand_id):
-                        print(f"{bot.name} hits")
                         if self.counting_prohibited and not bot.hit(self.deck.deal_card(), bot.hand_id):
                             increment = False
                             break
@@ -295,7 +281,6 @@ class BlackjackGame:
                             increment = False
                             break
                     elif action == 'double' and bot.can_double_down(bot.hand_id):
-                        print(f"{bot.name} doubles down")
                         if self.counting_prohibited and not bot.double_down(self.deck.deal_card(), bot.hand_id):
                             increment = True
                             break
@@ -303,7 +288,6 @@ class BlackjackGame:
                             increment = True
                             break
                     elif action == 'split' and bot.can_split():
-                        print(f"{bot.name} splits")
                         if self.counting_prohibited:
                             bot.split(self.deck.deal_card(), self.deck.deal_card())
                             increment = False
@@ -311,7 +295,6 @@ class BlackjackGame:
                             bot.split(self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]), self.deck.deal_card_and_update_counts(self.bot_players + [self.main_player]))
                             increment = False
                     elif action == 'stand' and bot.can_stand(bot.hand_id):
-                        print(f"{bot.name} stands")
                         display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited)
                         increment = True
                         break
@@ -321,27 +304,20 @@ class BlackjackGame:
                         break
                     elif action == 'insurance' and bot.can_insurance(self.dealer.hand):
                         bot.insurance(self.dealer.hand)
+                    else:
+                        increment = True
+                        break
                 if increment:
                     bot.hand_id += 1
 
         display_game_state(self.screen, self.main_player, self.dealer, self.bot_players, self.counting_prohibited, dealer_show_all=True)
         for players in [self.main_player] + self.bot_players:
             players.update_count(self.dealer.hand[1])
+        time.sleep(1)
         self.dealer.dealers_turn(self.deck, self.screen, self.main_player, self.bot_players, self.counting_prohibited)
         time.sleep(5)
 
         results = self.check_winner()
-        for result in results:
-            print(result)
-
-        print(f"AGH-coins balance for {self.main_player.name}: {self.main_player.money}")
-        for bot in self.bot_players[:]:
-            if bot.money == 0:
-                print(f"{bot.name} is out of money.")
-                self.bot_players.remove(bot)
-                self.players_turn = len(self.bot_players)//2
-            else:
-                print(f"AGH-coins balance for {bot.name}: {bot.money}")  
 
         return True
 

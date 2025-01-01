@@ -17,7 +17,7 @@ class TestBot(unittest.TestCase):
         self.assertFalse(bot.has_surrenderred)
 
     def test_decide_action(self):
-        bot = Bot("Wolfgang Amadeus Mozart")
+        bot = Bot("Domino")
         deck = Deck()
         bot.add_card(deck.deal_card())
         bot.add_card(deck.deal_card())
@@ -28,7 +28,7 @@ class TestBot(unittest.TestCase):
         self.assertIn(action, ['H', 'D', 'S', 'P', 'U'])
 
     def test_decide_final_action(self):
-        bot = Bot("Frank Ocean")
+        bot = Bot("Andrzej Lika")
         deck = Deck()
         bot.add_card(deck.deal_card())
         bot.add_card(deck.deal_card())

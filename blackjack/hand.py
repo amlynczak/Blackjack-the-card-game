@@ -1,3 +1,7 @@
+'''
+Class representing sigle hand that player (or bot) has.
+'''
+
 class Hand:
     def __init__(self, hand_name, bet):
         self.cards = []

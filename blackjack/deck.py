@@ -1,6 +1,9 @@
 from .card import Card
 import random
 
+'''
+Class representing a deck of cards.
+'''
 class Deck:
     def __init__(self, number_of_decks=1):
         self.number_of_decks = number_of_decks #number of decks vary from 1 to 8
@@ -13,7 +16,7 @@ class Deck:
         for i in range(self.number_of_decks):
             for suit in suits:
                 for rank in ranks:
-                    self.cards.append(Card(rank, suit))
+                    self.cards.append(Card(rank, suit)) #adding every card to the deck
         random.shuffle(self.cards) #shuffling the deck
 
     def deal_card(self):

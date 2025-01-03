@@ -1,4 +1,3 @@
-from .card import Card
 from .hand import Hand
 from card_counter.methods.canfield_master import CanfieldMasterCounter
 from card_counter.methods.halves import HalvesCounter
@@ -12,6 +11,9 @@ from card_counter.methods.zen_count import ZenCountCounter
 import os
 import json
 
+'''
+Class representing a player in the game.
+'''
 class Player:
     def __init__(self, name, money = 1000):
         self.name = name
@@ -32,9 +34,8 @@ class Player:
             'Silver Fox': SilverFoxCounter,
             'Zen Count': ZenCountCounter
         }
-
-        method = json.loads(open("assets/settings.json").read())["counting_method"]
-        number_of_decks = json.loads(open("assets/settings.json").read())["number_of_decks"]
+        method = json.loads(open("assets/settings.json").read())["counting_method"] #get the counting method from the settings file
+        number_of_decks = json.loads(open("assets/settings.json").read())["number_of_decks"] #get the number of decks from the settings file
         self.counter = method_switch[method](number_of_decks)
 
     def add_card(self, card, hand_id = 0):
@@ -68,7 +69,6 @@ class Player:
         return self.hands[self.hand_id].cards.__len__() == 2 and self.money >= self.hands[hand_id].bet
     
     def double_down(self, card, hand_id = 0):
-        '''Player doubles down'''
         if self.can_double_down(hand_id):
             self.money -= self.hands[hand_id].bet
             return self.hands[hand_id].double_down(card)
@@ -156,7 +156,6 @@ class Player:
 
         hand_value = self.get_hand_value(self.hand_id)
         rank_to_num = {'2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '10': 9, 'J': 10, 'Q': 11, 'K': 12, 'A': 13}
-        
         dealer_card_rank = dealers_hand[0].rank
         dealer_card_num = rank_to_num[dealer_card_rank]
 
@@ -168,7 +167,11 @@ class Player:
                 for line in file:
                     if line.startswith(self.hands[self.hand_id].cards[0].rank):
                         action_tmp = line.split()[dealer_card_num]
-                        break
+                        if self.can_split() and action == 'P':
+                            break
+                        else:
+                            action = 'U'
+                            break
         elif 'A' in [card.rank for card in self.hands[self.hand_id].cards] and len(self.hands[self.hand_id].cards) == 2:
             file_path = os.path.join(os.path.dirname(__file__), "../assets/counting_cards/pairs_with_aces")
             with open(file_path, 'r') as file:
@@ -259,7 +262,6 @@ class Player:
         else:
             return 'UNKNOWN'
         
-
     def update_count(self, card):
         self.counter.update_count(card)
 

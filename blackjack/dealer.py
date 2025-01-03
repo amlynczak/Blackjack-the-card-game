@@ -1,9 +1,10 @@
 import time
 
-from .player import Player
-
 from ui.utils import display_game_state
 
+'''
+Class representing the dealer in the game.
+'''
 class Dealer():
     def __init__(self):
         self.name = "Dealer"
@@ -34,7 +35,7 @@ class Dealer():
             else:
                 card = deck.deal_card_and_update_counts(bot_players+[main_player])
             self.add_card(card)
-            time.sleep(2)
+            time.sleep(2) #delay for better user experience
             display_game_state(screen, main_player, self, bot_players, counting_prohibited, True, False)
     
     def reset_hand(self):

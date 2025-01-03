@@ -11,6 +11,10 @@ from card_counter.methods.zen_count import ZenCountCounter
 import os
 import random
 
+'''
+Class representing a bot that uses card counting to play blackjack.
+It inherits from Bot class and adjusts the decision making process.
+'''
 class CountingBot(Bot):
     def __init__(self, name="Counting Bot", money = 1000, number_of_decks = 1):
         super().__init__(name, money)
@@ -24,11 +28,10 @@ class CountingBot(Bot):
             'Silver Fox': SilverFoxCounter,
             'Zen Count': ZenCountCounter
         }
-
         self.counter = method_switch[random.choice(list(method_switch.keys()))](number_of_decks)
 
     def decide_final_action(self, dealers_hand):
-        if self.can_insurance and self.is_insured == False and self.counter.get_count() >= 3:
+        if self.can_insurance(dealers_hand) and self.is_insured == False and self.counter.get_count() >= 3:
             return 'insurance'
 
         action = self.decide_action(dealers_hand)

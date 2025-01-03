@@ -1,7 +1,9 @@
 from .player import Player
 import random
-import os
 
+'''
+Bot class represents a bot player in the game. It inherits from the Player class and adjusts the decision making process.
+'''
 class Bot(Player):
     def __init__(self, name="Bot", money = 1000):
         super().__init__(name, money)
@@ -27,7 +29,7 @@ class Bot(Player):
                 return 'stand'
             
     def decide_bet(self, standard_bet):
-        '''Decides the bet amount (50% random, 50% standard)'''
+        '''Decides the bet amount (50% at random, 50% standard)'''
         r = random.uniform(0, 1)
         if r <= 0.5:
             return standard_bet

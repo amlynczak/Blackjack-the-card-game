@@ -1,3 +1,6 @@
+'''
+Class representing a card in a deck of cards
+'''
 class Card:
     def __init__(self, rank, suit):
         self.rank = rank

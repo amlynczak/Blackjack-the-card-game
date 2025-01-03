@@ -3,9 +3,7 @@ import sys
 import os
 import random
 import time
-import json
 
-from blackjack.card import Card
 from blackjack.deck import Deck
 from blackjack.player import Player
 from blackjack.dealer import Dealer
@@ -13,7 +11,7 @@ from blackjack.bot import Bot
 
 from card_counter.counting_bot import CountingBot
 
-from ui.utils import draw_text, draw_button, display_game_state, draw_background, draw_text_center, draw_title
+from ui.utils import draw_button, display_game_state, draw_background, draw_text_center, draw_title
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 pygame.init()
@@ -26,6 +24,9 @@ BLACK = (0, 0, 0)
 
 pygame.display.set_caption("Blackjack")        
 
+'''
+The main class representing the game.
+'''
 class BlackjackGame:
     def __init__(self, number_of_decks = 1, number_of_players = 1, counting_prohibited = True, standard_bet = 20):
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))

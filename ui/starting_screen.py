@@ -2,7 +2,7 @@ import pygame
 import os
 import sys
 
-from ui.utils import draw_button, draw_text, draw_title
+from ui.utils import draw_button, draw_title
 from ui.settings import settings
 from ui.rules import show_rules
 from ui.tables import choose_table

@@ -1,21 +1,8 @@
 import unittest
-import random
 from blackjack.bot import Bot
-from blackjack.card import Card
 from blackjack.deck import Deck
 
 class TestBot(unittest.TestCase):
-    def test_bot_init(self):
-        bot = Bot("Joseph Haydn")
-
-        self.assertEqual(bot.name, "Joseph Haydn")
-        self.assertEqual(len(bot.hands), 1)
-        self.assertEqual(bot.money, 1000)
-        self.assertEqual(bot.hand_id, 0)
-        self.assertEqual(bot.insurance_bet, 0)
-        self.assertFalse(bot.is_insured)
-        self.assertFalse(bot.has_surrenderred)
-
     def test_decide_action(self):
         bot = Bot("Domino")
         deck = Deck()

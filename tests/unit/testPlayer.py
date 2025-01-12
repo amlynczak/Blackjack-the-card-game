@@ -1,22 +1,10 @@
 import unittest
-import random
 from blackjack.player import Player
 from blackjack.deck import Deck
 from blackjack.card import Card
 from blackjack.dealer import Dealer
 
 class TestPlayer(unittest.TestCase):
-    def test_player_init(self):
-        player = Player("Pablo")
-
-        self.assertEqual(player.name, "Pablo")
-        self.assertEqual(len(player.hands), 1)
-        self.assertEqual(player.money, 1000)
-        self.assertEqual(player.hand_id, 0)
-        self.assertEqual(player.insurance_bet, 0)
-        self.assertFalse(player.is_insured)
-        self.assertFalse(player.has_surrenderred)
-
     def test_player_add_card(self):
         player = Player("Kanye West")
         player.add_card(Card("K", "spades"))

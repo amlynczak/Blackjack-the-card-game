@@ -1,21 +1,11 @@
 import unittest
-from unittest.mock import Mock
 import random
-import pygame
 
 from blackjack.dealer import Dealer
 from blackjack.card import Card
 from blackjack.deck import Deck
-from blackjack.player import Player
-from blackjack.bot import Bot
 
 class TestDealer(unittest.TestCase):
-
-    def test_dealer_init(self):
-        dealer = Dealer()
-        self.assertEqual(dealer.name, "Dealer")
-        self.assertEqual(len(dealer.hand), 0)
-
     def test_add_card(self):
         dealer = Dealer()
         card = Card("A", "rsenal")

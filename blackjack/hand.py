@@ -1,6 +1,9 @@
+'''
+Class representing sigle hand that player (or bot) has.
+'''
+
 class Hand:
     def __init__(self, hand_name, bet):
-        '''Initializes the hand with a name, cards, and bet'''
         self.cards = []
         self.name = hand_name
         self.bet = bet
@@ -8,11 +11,10 @@ class Hand:
         self.has_doubled_down = False
 
     def add_card(self, card):
-        """Adds a card to the hand."""
         self.cards.append(card)
 
     def get_hand_value(self):
-        """Calculates the value of the hand with aces handled."""
+        '''Returns the value of hand, points conversion for Ace (from 11 to 1) is done if the value is over 21'''
         value = 0
         num_aces = 0
         for card in self.cards:
@@ -27,24 +29,18 @@ class Hand:
         return value
     
     def hit(self, card):
-        '''Player takes a card from the deck. (for this hand)'''
         self.add_card(card)
-        print(f"{card} for {self.name}")
-        print(f"{self.name}: {self}")
 
         if self.get_hand_value() > 21:
-            print(f"{self.name} is over 21! You lost.")
             return False
         return True
     
     def double_down(self, card):
-        '''Player doubles down'''
         self.bet *= 2
         self.hit(card)
         self.has_doubled_down = True
         return False
     
     def __str__(self):
-        '''Returns a string representation of the hand'''
         hand_str = ', '.join(str(card) for card in self.cards)
         return f"{hand_str}:({self.get_hand_value()})"

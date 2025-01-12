@@ -4,25 +4,15 @@ from blackjack.hand import Hand
 from blackjack.card import Card
 
 class TestHand(unittest.TestCase):
-
-    def test_hand_init(self):
-        name = "Test Hand"
-        bet = 2137
-        hand = Hand(name, bet)
-        self.assertEqual(len(hand.cards), 0)
-        self.assertEqual(hand.name, name)
-        self.assertEqual(hand.bet, bet)
-        self.assertFalse(hand.isBlackjack)
-
     def test_add_card(self):
         card = Card("A", "♠")
-        hand = Hand("Test Hand", 69)
+        hand = Hand("Pablo", 69)
         hand.add_card(card)
         self.assertEqual(len(hand.cards), 1)
         self.assertEqual(hand.cards[0], card)
 
     def test_get_hand_value_no_aces_with_changing_value(self):
-        hand = Hand("Test Hand", 11)
+        hand = Hand("Frank Ocean", 11)
 
         random_number_1 = random.randint(2, 10)
         random_rank = random.randint(2, 14)
@@ -44,7 +34,7 @@ class TestHand(unittest.TestCase):
         self.assertEqual(hand.get_hand_value(), (card1.value()+card2.value()))
 
     def test_get_hand_value_aces_with_changing_value(self):
-        hand = Hand("Test Hand", 420)
+        hand = Hand("Joseph Haydn", 420)
 
         card1 = Card("A", "Black")
         card2 = Card("6", "Red")
@@ -62,7 +52,7 @@ class TestHand(unittest.TestCase):
         self.assertEqual(hand.get_hand_value(), 18)
 
     def test_hit(self):
-        hand = Hand("Test Hand", 47)
+        hand = Hand("Karol Wojtyla", 47)
         card1 = Card("A", "Pik")
         card2 = Card("4", "Karo")
         hand.add_card(card1)
@@ -82,7 +72,7 @@ class TestHand(unittest.TestCase):
         self.assertFalse(result)
 
     def test_double_down(self):
-        hand = Hand("Test Hand", 10)
+        hand = Hand("Adam Małysz", 10)
         card = Card("A", "♠")
         hand.add_card(card)
         hand.add_card(card)

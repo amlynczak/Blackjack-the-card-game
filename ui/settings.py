@@ -31,7 +31,8 @@ def settings(screen):
     options = {
         'number_of_decks': [1, 2, 4, 6, 8],
         'number_of_players': [1, 2, 3, 4, 5, 6, 7],
-        'counting_method': ['halves', 'high_low', 'high_optI', 'high_optII', 'ko', 'omega', 'red_seven', 'ten_count', 'zen_count']
+        'counting_method': ['Canfield Master', 'Halves', 'High - Low', 'High - Opt I', 'Omega II',
+                             'Revere RAPC', 'Silver Fox', 'Zen Count']
     }
 
     input_boxes = [pygame.Rect(200, 100, 400, 50), pygame.Rect(200, 200, 400, 50), pygame.Rect(200, 300, 400, 50)]
@@ -44,10 +45,10 @@ def settings(screen):
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = event.pos
-                if 300 <= mouse_x <= 500 and 500 <= mouse_y <= 550:
+                if 300 <= mouse_x <= 500 and 400 <= mouse_y <= 450:
                     save_settings(settings)
                     return input_boxes
-                if 300 <= mouse_x <= 500 and 400 <= mouse_y <= 450:
+                if 300 <= mouse_x <= 500 and 500 <= mouse_y <= 550:
                     return input_boxes
                 for i, box in enumerate(input_boxes):
                     if box.collidepoint(mouse_x, mouse_y):

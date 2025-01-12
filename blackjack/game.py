@@ -4,9 +4,12 @@ from .dealer import Dealer
 from .bot import Bot
 import time
 
+'''DEPRACTED'''
+'''This class was used to test the game before implementing the UI'''
+'''It's not used in the final version of the game'''
+
 class BlackjackGame:
     def __init__(self, num_decks=1, num_players=1, standard_bet=20):
-        '''Initializes the game with a number of decks and players'''
         self.deck = Deck(num_decks)
         self.standard_bet = standard_bet
         self.main_player = Player(name="Player", money = 200)
@@ -14,7 +17,6 @@ class BlackjackGame:
         self.dealer = Dealer()
 
     def start_new_round(self):
-        """start for a new round"""
         if self.main_player.can_play(self.standard_bet):
             self.main_player.reset_hand(self.standard_bet)
         else:
@@ -56,7 +58,6 @@ class BlackjackGame:
         print(f"Dealer: {self.dealer.hand[0]} and one [hidden] card")
 
     def check_winner(self):
-        '''Checks the winner of the game'''
         dealer_value = self.dealer.get_hand_value()
         results = []
 
@@ -101,10 +102,8 @@ class BlackjackGame:
         return results
 
     def play(self):
-        """Plays a game of blackjack"""
         self.start_new_round()
         
-        # Main player turn
         while self.main_player.hand_id < len(self.main_player.hands):
             while True and self.main_player.hands[self.main_player.hand_id].isBlackjack == False:
                 print(f"\n{self.main_player.hands[self.main_player.hand_id]}")
@@ -140,7 +139,6 @@ class BlackjackGame:
                     print("Invalid action. Try again.")
             self.main_player.hand_id += 1
 
-        # Bot players turn
         for bot in self.bot_players:
             while bot.hand_id < len(bot.hands):
                 while True and bot.hands[bot.hand_id].isBlackjack == False:

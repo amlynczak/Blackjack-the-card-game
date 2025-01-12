@@ -1,5 +1,9 @@
 from abc import ABC, abstractmethod
 
+'''
+Class representing card counting system. 
+Classes that iherit from this class are responsible for updating the count of the cards.
+'''
 class Counter(ABC):
     def __init__(self, num_decks):
         self.running_count = 0
@@ -14,7 +18,7 @@ class Counter(ABC):
 
     def update_count(self, card):
         self.running_count += self.card_value(card)
-        self.cards_dealt += 1
+        self.cards_dealt += 1 #counter for the number of cards dealt
         if self.num_decks * 52 <= self.cards_dealt:
             self.reset()
         self.update_true_count()

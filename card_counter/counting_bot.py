@@ -1,37 +1,39 @@
 from blackjack.bot import Bot
+from card_counter.methods.canfield_master import CanfieldMasterCounter
 from card_counter.methods.halves import HalvesCounter
 from card_counter.methods.high_low import HighLowCounter
 from card_counter.methods.high_optI import HighOptICounter
-from card_counter.methods.high_optII import HighOptIICounter
-from card_counter.methods.ko import KOCounter
 from card_counter.methods.omega import OmegaCounter
-from card_counter.methods.red_seven import Red7Counter
-from card_counter.methods.ten_count import TenCountCounter
+from card_counter.methods.revere_rapc import RevereRAPCCounter
+from card_counter.methods.silver_fox import SilverFoxCounter
 from card_counter.methods.zen_count import ZenCountCounter
 
 import os
 import random
 
+'''
+Class representing a bot that uses card counting to play blackjack.
+It inherits from Bot class and adjusts the decision making process.
+'''
 class CountingBot(Bot):
     def __init__(self, name="Counting Bot", money = 1000, number_of_decks = 1):
-        '''Initializes the bot with a name, hand, and money'''
         super().__init__(name, money)
         method_switch = {
-            'halves': HalvesCounter,
-            'high_low': HighLowCounter,
-            'high_optI': HighOptICounter,
-            'high_optII': HighOptIICounter,
-            'ko': KOCounter,
-            'omega': OmegaCounter,
-            'red_seven': Red7Counter,
-            'ten_count': TenCountCounter,
-            'zen_count': ZenCountCounter
+            'Canfield Master': CanfieldMasterCounter,
+            'Halves': HalvesCounter,
+            'High - Low': HighLowCounter,
+            'High - Opt I': HighOptICounter,
+            'Omega II': OmegaCounter,
+            'Revere RAPC': RevereRAPCCounter,
+            'Silver Fox': SilverFoxCounter,
+            'Zen Count': ZenCountCounter
         }
-
         self.counter = method_switch[random.choice(list(method_switch.keys()))](number_of_decks)
 
     def decide_final_action(self, dealers_hand):
-        '''Decides whether to hit or stand based on the count'''
+        if self.can_insurance(dealers_hand) and self.is_insured == False and self.counter.get_count() >= 3:
+            return 'insurance'
+
         action = self.decide_action(dealers_hand)
 
         hand_value = self.get_hand_value(self.hand_id)
@@ -48,7 +50,6 @@ class CountingBot(Bot):
                 for line in file:
                     if line.startswith(self.hands[self.hand_id].cards[0].rank):
                         action_tmp = line.split()[dealer_card_num]
-                        print("split deciding")
                         break
         elif 'A' in [card.rank for card in self.hands[self.hand_id].cards] and len(self.hands[self.hand_id].cards) == 2:
             file_path = os.path.join(os.path.dirname(__file__), "../assets/counting_cards/pairs_with_aces")
@@ -56,7 +57,6 @@ class CountingBot(Bot):
                 for line in file:
                     if line.startswith(self.hands[self.hand_id].cards[0].rank):
                         action_tmp = line.split()[dealer_card_num]
-                        print("ace deciding")
                         break
         else:
             file_path = os.path.join(os.path.dirname(__file__), "../assets/counting_cards/points")
@@ -64,25 +64,18 @@ class CountingBot(Bot):
                 for line in file:
                     if line.startswith(str(hand_value)):
                         action_tmp = line.split()[dealer_card_num]
-                        print("point deciding")
                         break
-
-        print(action)
-        print(action_tmp)
         
         true_count = self.counter.get_count()
-        print(true_count)
 
         if action != action_tmp:
             if action_tmp[0] == '+':
                 true_count_threshold = int(action_tmp[1:])
                 if true_count >= true_count_threshold:
-                    print("more aggressive")
                     action = self.more_aggressive(action)
             elif action_tmp[0] == '-':
                 true_count_threshold = int(action_tmp[1:])
                 if true_count <= ((-1) * true_count_threshold):
-                    print("play safe")
                     action = self.play_safe(action)
 
         if action == 'H':
@@ -93,6 +86,11 @@ class CountingBot(Bot):
             return 'double'
         elif action == 'P':
             return 'split'
+        else:
+            if self.get_hand_value(self.hand_id) < 17:
+                return 'hit'
+            else:
+                return 'stand'
 
     def more_aggressive(self, action):
         if action == 'H':
@@ -144,5 +142,4 @@ class CountingBot(Bot):
                     return bet
 
     def update_count(self, card):
-        '''Updates the count based on the card'''
         self.counter.update_count(card)
